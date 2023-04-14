@@ -3,11 +3,17 @@ name = "kernel"
 version = "0.1.0"
 edition = "2021"
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+# Let's use the last version of the SDK, todo: fix the version if it's an issue
+tezos-smart-rollup-core = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-host = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-debug = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-encoding = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-storage = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-entrypoint = { git = "https://gitlab.com/tezos/tezos" }
+tezos-smart-rollup-mock = { git = "https://gitlab.com/tezos/tezos" }
