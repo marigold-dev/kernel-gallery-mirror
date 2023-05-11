@@ -43,6 +43,10 @@ const splitNChars = (txt) => {
 };
 
 const App = () => {
+  // players
+  // Only contains the position of the different players
+  const [players, setPlayers] = useState([]);
+
   // signer
   const [signer, setSigner] = useState(undefined);
 
@@ -91,6 +95,7 @@ const App = () => {
   // 32 * 32
   // Define a player with player position and
   // Add the inventory of the player
+  // Only contain the inventory of the player
   const [player, updatePlayer] = useState({ x: 0, y: 0, inventory: [] });
 
   // Define a map
@@ -109,23 +114,49 @@ const App = () => {
 
     // starting an interval
     const interval = setInterval(async () => {
+      // to retrieve all the different players
+      // to display players by using the subkeys in sequencer
+      // to get all the players in the list
+      const playersRes = await fetch(
+        "http://127.0.0.1:8080/state/subkeys?path=/players"
+      );
+
+      // update the position of each player
+      // .json to parse a text in a json
+      const players = await playersRes.json();
+
+      // go through the list of players and get their publicKeyHash
+      // reduce is like fold function in OCaml
+      const updatedPlayers = await players.reduce(
+        async (players, playerAddress) => {
+          // Player
+          // Fetching the player x position, res1 is the http answer
+          const res1 = await fetch(
+            `http://127.0.0.1:8080/state/value?path=/players/${playerAddress}/x_pos`
+          );
+          // Getting the response as text
+          const x_pos_bytes = await res1.text();
+          // Converting the text as number
+          const x_pos = Number.parseInt(x_pos_bytes, 16);
+
+          const res2 = await fetch(
+            `http://127.0.0.1:8080/state/value?path=/players/${playerAddress}/y_pos`
+          );
+          const y_pos_bytes = await res2.text();
+          const y_pos = Number.parseInt(y_pos_bytes, 16);
+
+          // update players by adding the end of the list the x, y position
+          const acc = await players;
+          return Promise.resolve([
+            ...acc,
+            { y: y_pos, x: x_pos, address: playerAddress },
+          ]);
+        },
+        Promise.resolve([])
+      );
+      setPlayers(updatedPlayers);
+
       const player_address = await signer.publicKeyHash();
-
-      // Player
-      // Fetching the player x position, res1 is the http answer
-      const res1 = await fetch(
-        `http://127.0.0.1:8080/state/value?path=/players/${player_address}/x_pos`
-      );
-      // Getting the response as text
-      const x_pos_bytes = await res1.text();
-      // Converting the text as number
-      const x_pos = Number.parseInt(x_pos_bytes, 16);
-
-      const res2 = await fetch(
-        `http://127.0.0.1:8080/state/value?path=/players/${player_address}/y_pos`
-      );
-      const y_pos_bytes = await res2.text();
-      const y_pos = Number.parseInt(y_pos_bytes, 16);
 
       // fetching the inventory of the player
       const res4 = await fetch(
@@ -137,8 +168,8 @@ const App = () => {
       const inventory = splitNChars(inventory_bytes);
 
       updatePlayer({
-        x: x_pos,
-        y: y_pos,
+        x: 0,
+        y: 0,
         inventory,
       });
 
@@ -180,14 +211,26 @@ const App = () => {
                       let idx = map_y * 32 + map_x;
 
                       // place the player position on the map
-                      if (map_y === player.y && map_x === player.x) {
-                        return (
-                          <div
-                            key={`${map_x},${map_x}`}
-                            className="cell player"
-                            tabIndex={0}
-                          ></div>
-                        );
+                      for (let index = 0; index < players.length; index++) {
+                        const player = players[index];
+
+                        // TODO - move to the kernel later
+                        // to generate the color for the player base on their address
+                        const color =
+                          "#" +
+                          Buffer.from(player.address.substring(3, 7)) // "tz1[3-7].."
+                            .toString("hex")
+                            .substring(0, 6);
+
+                        if (map_y === player.y && map_x === player.x)
+                          return (
+                            <div
+                              key={`${index}-${map_x},${map_x}`}
+                              className="cell player"
+                              tabIndex={0}
+                              style={{ backgroundColor: color }}
+                            ></div>
+                          );
                       }
 
                       // Place items on floor

@@ -2,12 +2,10 @@
 
 # next pair
 
-- display two players onto the map
-  - fetch the /players subkey => ["tz1..bob", "tz2...alice"]
-  - fetch /players/tz1...bob/x_pos etc...
 - preparing the demo to have the game running into two different computers
 - marketplace + withdraw on L1
 - proxy
+- next step is to use the verification(wallet)
 
 ## Next potential features
 
