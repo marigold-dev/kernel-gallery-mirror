@@ -1,6 +1,13 @@
+use tezos_smart_rollup_encoding::public_key_hash;
+
 use crate::{
-    map::Map, map::TileType, map::MAP_HEIGHT, map::MAP_WIDTH, player::Player,
-    player_actions::PlayerAction,
+    item,
+    map::Map,
+    map::TileType,
+    map::MAP_HEIGHT,
+    map::MAP_WIDTH,
+    player::Player,
+    player_actions::{PlayerAction, PlayerMsg},
 };
 
 // Define State
@@ -66,6 +73,17 @@ impl State {
         }
     }
 
+    // Market-place: Sell (item_id, price)
+    pub fn sell_item(self, item_id: usize, price: usize) -> State {
+        // remove item-th in inventory
+        todo!()
+    }
+
+    // Marketplace: Buy(player_address, item_id)
+    pub fn buy_item(self, player_address: &str, item_id: usize) -> State {
+        todo!()
+    }
+
     fn update_player(self, player: Player) -> State {
         if self.map.can_enter_tile(player.x_pos, player.y_pos) {
             State { player, ..self }
@@ -94,6 +112,8 @@ impl State {
             }
             PlayerAction::PickUp => self.pick_up(),
             PlayerAction::Drop(item_position) => self.drop_item(item_position),
+            PlayerAction::Sell(item_id, price) => self.sell_item(item_id, price),
+            PlayerAction::Buy(player_address, item_id) => self.buy_item(&player_address, item_id),
         }
     }
 }

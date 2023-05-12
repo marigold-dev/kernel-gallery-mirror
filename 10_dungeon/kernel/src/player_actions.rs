@@ -12,6 +12,10 @@ pub enum PlayerAction {
     PickUp,
     // item can be chosen to drop from the inventory (nth)
     Drop(usize),
+    // Sell(ItemId, Price)
+    Sell(usize, usize),
+    // Buy(PlayerAddress, ItemId)
+    Buy(String, usize),
 }
 
 // convert bytes -> playerAction need to have the implement of tryFrom
@@ -58,6 +62,8 @@ impl TryFrom<Vec<u8>> for PlayerMsg {
                     // drop with 3 bytes
                     [48, 54, 48, 48] => Ok(PlayerAction::Drop(0)),
                     [48, 54, 48, 49] => Ok(PlayerAction::Drop(1)),
+                    // TODO: sell
+                    // TODO: buy
                     _ => Err(()),
                 }?;
 

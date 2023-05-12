@@ -1,12 +1,13 @@
 use crate::item::Item;
 use crate::map::{Map, TileType, MAP_HEIGHT, MAP_WIDTH};
-use crate::player::{Player, MAX_ITEMS};
+use crate::player::{self, Player, MAX_ITEMS};
 use crate::state::State;
 use tezos_smart_rollup_host::path::{concat, OwnedPath, RefPath};
 use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
 
 const PLAYER_PATH: RefPath = RefPath::assert_from(b"/players");
 const MAP_PATH: RefPath = RefPath::assert_from(b"/state/map");
+const MARKET_PLACE_PATH: RefPath = RefPath::assert_from(b"/market-place");
 
 // player key: /players/{public_key}/[x_pos|y_pos|inventory]
 // Add a player key bytaking the player address, from the PLAYER_PATH
@@ -57,6 +58,31 @@ fn player_gold(player_address: &str) -> OwnedPath {
     let gold_path = OwnedPath::try_from("/gold".to_string()).unwrap();
     let player_path = player_key(player_address);
     concat(&player_path, &gold_path).unwrap()
+}
+
+// Market-place
+
+// market-place key: /market-place/{public_key}/[01/02]
+// sword: 01
+// potion: 02
+fn market_place_key(player_address: &str) -> OwnedPath {
+    let player_address: Vec<u8> = format!("/{}", player_address).into();
+    let player_address = OwnedPath::try_from(player_address).unwrap();
+    concat(&MARKET_PLACE_PATH, &player_address).unwrap()
+}
+
+// marketplace item_01
+fn market_place_sword(player_address: &str) -> OwnedPath {
+    let sword_id_path = OwnedPath::try_from("/01".to_string()).unwrap();
+    let market_place_path = market_place_key(player_address);
+    concat(&market_place_path, &sword_id_path).unwrap()
+}
+
+// marketplace item_02
+fn market_place_potion(player_address: &str) -> OwnedPath {
+    let potion_id_path = OwnedPath::try_from("/02".to_string()).unwrap();
+    let market_place_path = market_place_key(player_address);
+    concat(&market_place_path, &potion_id_path).unwrap()
 }
 
 // load_player for load_state
