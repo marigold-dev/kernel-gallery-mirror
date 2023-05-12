@@ -7,6 +7,7 @@ pub struct Player {
     pub x_pos: usize,
     pub y_pos: usize,
     pub inventory: Vec<Item>,
+    pub gold: usize,
 }
 
 impl Player {
@@ -15,6 +16,8 @@ impl Player {
             x_pos,
             y_pos,
             inventory: Vec::new(),
+            // default 1000 gold for each player
+            gold: 1000,
         }
     }
 
@@ -24,6 +27,7 @@ impl Player {
                 y_pos,
                 x_pos: self.x_pos,
                 inventory: self.inventory.clone(),
+                gold: self.gold,
             })
             .unwrap_or(self.clone())
     }
@@ -33,6 +37,7 @@ impl Player {
             y_pos: self.y_pos + 1,
             x_pos: self.x_pos,
             inventory: self.inventory.clone(),
+            gold: self.gold,
         }
     }
 
@@ -42,6 +47,7 @@ impl Player {
                 x_pos,
                 y_pos: self.y_pos,
                 inventory: self.inventory.clone(),
+                gold: self.gold,
             })
             .unwrap_or(self.clone())
     }
@@ -51,6 +57,7 @@ impl Player {
             x_pos: self.x_pos + 1,
             y_pos: self.y_pos,
             inventory: self.inventory.clone(),
+            gold: self.gold,
         }
     }
 

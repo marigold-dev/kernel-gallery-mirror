@@ -22,7 +22,7 @@ fn player_key(player_address: &str) -> OwnedPath {
     concat(&PLAYER_PATH, &player_address).unwrap()
 }
 
-// Now we define de /players/{public_key}/x_pos
+// Now we define the /players/{public_key}/x_pos
 fn player_x_pos(player_address: &str) -> OwnedPath {
     // convert it to a string, and we are sure that it is a string so we can unwrap it
     // then we can call the OwnedPath::try_from
@@ -32,7 +32,7 @@ fn player_x_pos(player_address: &str) -> OwnedPath {
     concat(&player_path, &x_pos_path).unwrap()
 }
 
-// Now we define de /players/{public_key}/y_pos
+// Now we define the /players/{public_key}/y_pos
 fn player_y_pos(player_address: &str) -> OwnedPath {
     // convert it to a string, and we are sure that it is a string so we can unwrap it
     // then we can call the OwnedPath::try_from
@@ -42,7 +42,7 @@ fn player_y_pos(player_address: &str) -> OwnedPath {
     concat(&player_path, &y_pos_path).unwrap()
 }
 
-// Now we define de /players/{public_key}/inventory
+// Now we define the /players/{public_key}/inventory
 fn player_inventory(player_address: &str) -> OwnedPath {
     // convert it to a string, and we are sure that it is a string so we can unwrap it
     // then we can call the OwnedPath::try_from
@@ -52,10 +52,16 @@ fn player_inventory(player_address: &str) -> OwnedPath {
     concat(&player_path, &inventory_path).unwrap()
 }
 
+// Now we define the /players/{public_key}/gold
+fn player_gold(player_address: &str) -> OwnedPath {
+    let gold_path = OwnedPath::try_from("/gold".to_string()).unwrap();
+    let player_path = player_key(player_address);
+    concat(&player_path, &gold_path).unwrap()
+}
+
 // load_player for load_state
 fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Player, RuntimeError> {
     let player_path = player_key(player_address);
-    let inventory_path = player_inventory(player_address);
 
     let player_exists = rt.store_has(&player_path)?;
 
@@ -81,7 +87,7 @@ fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Player, R
             let inventory_bytes =
                 rt.store_read(&player_inventory(&player_address), 0, MAX_ITEMS)?;
 
-            // convert vector of inventory to bytes
+            // convert bytes -> vector
             let inventory: Vec<Item> = inventory_bytes
                 .iter()
                 .filter_map(|bytes| match bytes {
@@ -91,10 +97,20 @@ fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Player, R
                 })
                 .collect();
 
+            let gold = rt.store_read(
+                &player_gold(player_address),
+                0,
+                std::mem::size_of::<usize>(),
+            )?;
+
+            // convert bytes -> usize
+            let gold = usize::from_be_bytes(gold.try_into().unwrap());
+
             Ok(Player {
                 x_pos,
                 y_pos,
                 inventory,
+                gold,
             })
         }
         _ => Ok(Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2)),
@@ -133,7 +149,6 @@ fn load_map<R: Runtime>(rt: &mut R) -> Result<Map, RuntimeError> {
 // load_state will call the load_olayer and load_map
 pub fn load_state<R: Runtime>(rt: &mut R, player_address: &str) -> Result<State, RuntimeError> {
     // first load the player
-    // TODO: player_position --> player
     let player = load_player(rt, player_address)?;
     // then load the map
     let map = load_map(rt)?;
@@ -154,6 +169,7 @@ fn update_player<R: Runtime>(
     let y_pos = usize::to_be_bytes(player.y_pos);
     let () = rt.store_write(&player_y_pos(&player_address), &y_pos, 0)?;
 
+    // inventory: vec -> bytes
     let inventory: Vec<u8> = player
         .inventory
         .iter()
@@ -164,6 +180,10 @@ fn update_player<R: Runtime>(
         .collect();
 
     let () = rt.store_write(&player_inventory(player_address), &inventory, 0)?;
+
+    // gold: usize -> bytes
+    let gold = usize::to_be_bytes(player.gold);
+    let () = rt.store_write(&player_gold(&player_address), &gold, 0)?;
 
     Ok(())
 }
