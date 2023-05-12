@@ -6,7 +6,7 @@
 2. "/market-place/{player-address}/{item-id}"
    - sword: 01
    - potion: 02
-3. The value stored in the "/market-place/{player-address}/{item-id}" is the price
+3. The value stored in the "/market-place/{player-address}/{item-id}/value" is the price
 4. Add action to add an item to the market place:
 
 ```rust

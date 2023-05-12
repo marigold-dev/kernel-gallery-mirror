@@ -62,7 +62,7 @@ fn player_gold(player_address: &str) -> OwnedPath {
 
 // Market-place
 
-// market-place key: /market-place/{public_key}/[01/02]
+// market-place key: /market-place/{public_key}/[01/02]/value
 // sword: 01
 // potion: 02
 fn market_place_key(player_address: &str) -> OwnedPath {
@@ -78,11 +78,25 @@ fn market_place_sword(player_address: &str) -> OwnedPath {
     concat(&market_place_path, &sword_id_path).unwrap()
 }
 
+// add value for item_01
+fn market_place_value_sword(player_address: &str) -> OwnedPath {
+    let sword_id_path = market_place_sword(player_address);
+    let value_sword_path = OwnedPath::try_from("/value".to_string()).unwrap();
+    concat(&sword_id_path, &value_sword_path).unwrap()
+}
+
 // marketplace item_02
 fn market_place_potion(player_address: &str) -> OwnedPath {
     let potion_id_path = OwnedPath::try_from("/02".to_string()).unwrap();
     let market_place_path = market_place_key(player_address);
     concat(&market_place_path, &potion_id_path).unwrap()
+}
+
+// add value for item_02
+fn market_place_value_potion(player_address: &str) -> OwnedPath {
+    let potion_id_path = market_place_potion(player_address);
+    let value_potion_path = OwnedPath::try_from("/value".to_string()).unwrap();
+    concat(&potion_id_path, &value_potion_path).unwrap()
 }
 
 // load_player for load_state
