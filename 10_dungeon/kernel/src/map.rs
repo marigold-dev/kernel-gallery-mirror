@@ -120,7 +120,7 @@ impl Map {
                     Self { tiles: map };
                 }
                 // Add floor in the middle of the map
-                let map = vec![TileType::Floor(None); 16 + delta_x + 16 + delta_y];
+                let map = vec![TileType::Floor(None); 16 + delta_x * 16 + delta_y];
                 Self { tiles: map };
             }
         }
