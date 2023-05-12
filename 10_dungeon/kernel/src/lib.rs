@@ -53,68 +53,95 @@ mod tests {
 
     use crate::{
         item::{self, Item},
-        map::{TileType, MAP_HEIGHT, MAP_WIDTH},
+        map::{Map, TileType, MAP_HEIGHT, MAP_WIDTH},
+        player::Player,
         state,
     };
 
     const ITEM_X: usize = MAP_WIDTH / 2;
     const ITEM_Y: usize = MAP_HEIGHT / 2;
 
-    #[test]
-    fn test_add_item() -> () {
-        let mut state = state::State::new();
-        let sword = item::Item::new_sword();
-        let _add_sword = &state.map.add_item(ITEM_X, ITEM_Y, sword);
-        let is_sword = match &state.map.get_tile(ITEM_X, ITEM_Y) {
-            Some(TileType::Floor(Some(Item::Sword))) => true,
-            _ | None => false,
-        };
-
-        assert_eq!(is_sword, false);
+    fn idx_to_xy(idx: usize) -> (usize, usize) {
+        let x = idx % MAP_WIDTH;
+        let y = idx / MAP_HEIGHT;
+        (x, y)
     }
 
-    fn test_remove_item() -> () {
-        let mut state = state::State::new();
+    #[test]
+    fn test_add_item() -> () {
+        let map = Map::new();
         let sword = item::Item::new_sword();
-        let _add_sword = &state.map.add_item(ITEM_X, ITEM_Y, sword);
-        let mut map = &state.map.remove_item(ITEM_X, ITEM_Y);
+
+        let map = map.add_item(ITEM_X, ITEM_Y, sword);
+
+        let is_sword = match map.get_tile(ITEM_X, ITEM_Y) {
+            Some(TileType::Floor(Some(Item::Sword))) => true,
+            _ => false,
+        };
+
+        assert_eq!(is_sword, true);
+    }
+
+    #[test]
+    fn test_remove_item() -> () {
+        let map = Map::new();
+        let sword = item::Item::new_sword();
+
+        let map = map.add_item(ITEM_X, ITEM_Y, sword);
+        let map = map.remove_item(ITEM_X, ITEM_Y);
+
         let is_floor_none = match map.get_tile(ITEM_X, ITEM_Y) {
             Some(TileType::Floor(None)) => true,
-            _ | None => false,
+            _ => false,
         };
 
         assert_eq!(is_floor_none, true);
     }
 
+    #[test]
     fn test_pickup_item() -> () {
-        let mut state = state::State::new();
-        let sword = item::Item::new_sword();
-        let _add_sword = &state.map.add_item(ITEM_X, ITEM_Y, sword);
+        let sword_position = idx_to_xy(48);
+        let state = state::State {
+            map: Map::new(),
+            player: Player::new(sword_position.0, sword_position.1),
+        };
 
-        let state = state::State::pick_up(&state);
+        let state = state.pick_up();
 
         let is_sword = match state.map.get_tile(state.player.x_pos, state.player.y_pos) {
             Some(TileType::Floor(None)) => true,
-            _ | None => false,
+            _ => false,
         };
 
-        assert_eq!(is_sword, false);
+        let state::State { player, .. } = state;
+        let inventory = player.inventory;
+
+        assert!(!inventory.is_empty());
+        assert_eq!(is_sword, true);
     }
 
+    #[test]
     fn test_drop_item() -> () {
-        let mut state = state::State::new();
-        let sword = item::Item::new_sword();
-        let _add_sword = &state.map.add_item(ITEM_X, ITEM_Y, sword);
+        let sword_position = idx_to_xy(48);
+        let state = state::State {
+            map: Map::new(),
+            player: Player::new(sword_position.0, sword_position.1),
+        };
 
         let state = state::State::pick_up(state);
 
         let state = state::State::drop_item(state, 0);
+        let state = state::State::drop_item(state, 1);
 
-        let is_sword = match state.map.get_tile(state.player.x_pos, state.player.y_pos) {
+        let is_present = match state.map.get_tile(state.player.x_pos, state.player.y_pos) {
             Some(TileType::Floor(Some(Item::Sword))) => true,
-            _ | None => false,
+            _ => false,
         };
 
-        assert_eq!(is_sword, false);
+        let state::State { player, .. } = state;
+        let inventory = player.inventory;
+
+        assert!(inventory.is_empty());
+        assert_eq!(is_present, true);
     }
 }

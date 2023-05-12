@@ -20,6 +20,12 @@ pub fn map_idx(x: usize, y: usize) -> usize {
     (y * MAP_WIDTH) + x
 }
 
+pub fn idx_to_xy(idx: usize) -> (usize, usize) {
+    let x = idx % MAP_WIDTH;
+    let y = idx / MAP_HEIGHT;
+    (x, y)
+}
+
 impl Map {
     // Define a new map at the beginning of the game
     pub fn new() -> Self {
@@ -33,6 +39,7 @@ impl Map {
         // place wall at the 0
         map[0] = TileType::Wall;
         // place the sword on the 48 on the map
+
         map[48] = TileType::Floor(Some(Item::Sword));
         map[970] = TileType::Floor(Some(Item::Potion));
 
