@@ -1,5 +1,47 @@
 # Todo
 
+# Implementation of the market place
+
+1. adding a field to players: `gold`, default value: 1000 (usize)
+2. "/market-place/{player-address}/{item-id}"
+   - sword: 01
+   - potion: 02
+3. The value stored in the "/market-place/{player-address}/{item-id}" is the price
+4. Add action to add an item to the market place:
+
+```rust
+enum PlayerAction {
+   ...
+   Sell(ItemId, Price) // Sell(usize, usize)
+   Buy(PlayerAddress, ItemId)
+}
+```
+
+# Generating the map randomly
+
+1. Create a map with walls everywhere
+2. Then add some floors
+
+```rust
+let x, y = 16, 16; // The middle of the map
+for j in 100
+   for i in 100:
+      add_floor(x, y);
+      let delta_x = random(0, 1);
+      let delta_y = random(0, 1);
+      let item_sword = random(0, 500);
+      let item_potion = random(0, 250);
+      if item_sword == 0 {
+         add_item(Sword);
+      }
+      if item_potion == 0 {
+         add_item(Potion);
+      }
+      x, y = x + delta_x, y + delta_y;
+```
+
+# Modify Item as a list
+
 # next pair
 
 - preparing the demo to have the game running into two different computers

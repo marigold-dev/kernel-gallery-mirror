@@ -20,12 +20,6 @@ pub fn map_idx(x: usize, y: usize) -> usize {
     (y * MAP_WIDTH) + x
 }
 
-pub fn idx_to_xy(idx: usize) -> (usize, usize) {
-    let x = idx % MAP_WIDTH;
-    let y = idx / MAP_HEIGHT;
-    (x, y)
-}
-
 impl Map {
     // Define a new map at the beginning of the game
     pub fn new() -> Self {
