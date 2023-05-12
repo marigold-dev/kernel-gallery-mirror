@@ -62,7 +62,7 @@ impl Kernel for MyKernel {
 async fn main() -> std::io::Result<()> {
     let sled_database_uri = "/tmp/sequencer-storage";
     let tezos_node_uri = "http://localhost:8732";
-    let rollup_node_uri = "http://localhost:8932";
+    let rollup_node_uri = "http://localhost:8732";
 
     let node =
         sequencer::NativeNode::new::<MyKernel>(sled_database_uri, tezos_node_uri, rollup_node_uri);

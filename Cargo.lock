@@ -436,6 +436,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
 
 [[package]]
+name = "kernel"
+version = "0.1.0"
+dependencies = [
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-debug 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-encoding 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-entrypoint 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-mock 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-storage 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -927,7 +940,7 @@ dependencies = [
  "tezos-smart-rollup-encoding 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos-smart-rollup-entrypoint 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos-smart-rollup-host 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tezos-smart-rollup-mock",
+ "tezos-smart-rollup-mock 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos-smart-rollup-storage 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos_crypto_rs",
  "tezos_data_encoding",
@@ -960,6 +973,11 @@ version = "0.1.0"
 source = "git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3#046281d4494560ed96796bd7ffe9053e573654f3"
 
 [[package]]
+name = "tezos-smart-rollup-core"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+
+[[package]]
 name = "tezos-smart-rollup-debug"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -976,6 +994,15 @@ source = "git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9
 dependencies = [
  "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
  "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
+]
+
+[[package]]
+name = "tezos-smart-rollup-debug"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
 ]
 
 [[package]]
@@ -1016,6 +1043,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "tezos-smart-rollup-encoding"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "hex",
+ "nom",
+ "num-bigint",
+ "num-traits",
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos_crypto_rs",
+ "tezos_data_encoding",
+ "tezos_data_encoding_derive",
+ "thiserror",
+ "time",
+]
+
+[[package]]
 name = "tezos-smart-rollup-entrypoint"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1041,6 +1086,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tezos-smart-rollup-entrypoint"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "dlmalloc",
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-debug 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-panic-hook 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+]
+
+[[package]]
 name = "tezos-smart-rollup-host"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1062,6 +1119,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tezos-smart-rollup-host"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos_crypto_rs",
+ "tezos_data_encoding",
+ "thiserror",
+]
+
+[[package]]
 name = "tezos-smart-rollup-mock"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1071,6 +1139,19 @@ dependencies = [
  "tezos-smart-rollup-core 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos-smart-rollup-encoding 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tezos-smart-rollup-host 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tezos_crypto_rs",
+ "tezos_data_encoding",
+]
+
+[[package]]
+name = "tezos-smart-rollup-mock"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "hex",
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-encoding 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
  "tezos_crypto_rs",
  "tezos_data_encoding",
 ]
@@ -1090,6 +1171,14 @@ version = "0.1.0"
 source = "git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3#046281d4494560ed96796bd7ffe9053e573654f3"
 dependencies = [
  "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
+]
+
+[[package]]
+name = "tezos-smart-rollup-panic-hook"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
 ]
 
 [[package]]
@@ -1114,6 +1203,18 @@ dependencies = [
  "tezos-smart-rollup-debug 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
  "tezos-smart-rollup-encoding 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
  "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/marigold/tezos?rev=046281d4494560ed96796bd7ffe9053e573654f3)",
+ "thiserror",
+]
+
+[[package]]
+name = "tezos-smart-rollup-storage"
+version = "0.1.0"
+source = "git+https://gitlab.com/tezos/tezos#10171aee6505900600cea07ec14e98f842afaee8"
+dependencies = [
+ "tezos-smart-rollup-core 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-debug 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-encoding 0.1.0 (git+https://gitlab.com/tezos/tezos)",
+ "tezos-smart-rollup-host 0.1.0 (git+https://gitlab.com/tezos/tezos)",
  "thiserror",
 ]
 

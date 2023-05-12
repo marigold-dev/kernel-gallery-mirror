@@ -134,15 +134,12 @@ fn load_map<R: Runtime>(rt: &mut R) -> Result<Map, RuntimeError> {
 pub fn load_state<R: Runtime>(rt: &mut R, player_address: &str) -> Result<State, RuntimeError> {
     // first load the player
     // TODO: player_position --> player
-    let player_position = load_player(rt, player_address)?;
+    let player = load_player(rt, player_address)?;
     // then load the map
     let map = load_map(rt)?;
     // return the new state
 
-    Ok(State {
-        player_position,
-        map,
-    })
+    Ok(State { player, map })
 }
 
 fn update_player<R: Runtime>(
@@ -193,7 +190,7 @@ pub fn update_state<R: Runtime>(
     player_address: &str,
     state: &State,
 ) -> Result<(), RuntimeError> {
-    update_player(rt, player_address, &state.player_position)?;
+    update_player(rt, player_address, &state.player)?;
     update_map(rt, &state.map)?;
 
     Ok(())
