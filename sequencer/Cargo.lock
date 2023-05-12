@@ -1065,6 +1065,7 @@ dependencies = [
 name = "kernel"
 version = "0.1.0"
 dependencies = [
+ "rand 0.8.5",
  "tezos-smart-rollup-core",
  "tezos-smart-rollup-debug",
  "tezos-smart-rollup-encoding",
@@ -1752,6 +1753,7 @@ dependencies = [
  "actix-web",
  "hex",
  "kernel",
+ "rand 0.8.5",
  "sequencer",
  "serde",
  "serde_json",

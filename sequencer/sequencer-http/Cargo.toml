@@ -13,3 +13,4 @@ serde_json = "1.0.95"
 sequencer = {path= "../sequencer-lib"}
 hex = "0.4.3"
 kernel = {path = "../../10_dungeon/kernel"}
+rand = "0.8.5"

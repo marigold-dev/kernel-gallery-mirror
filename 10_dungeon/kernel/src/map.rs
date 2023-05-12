@@ -1,6 +1,6 @@
-use std::vec;
-
 use crate::item::Item;
+use rand::Rng;
+use std::vec;
 
 pub const MAP_WIDTH: usize = 32;
 pub const MAP_HEIGHT: usize = 32;
@@ -97,5 +97,34 @@ impl Map {
             }
             _ => self,
         }
+    }
+
+    // Generate random map
+    pub fn random_map() -> Self {
+        // fill the entire map with wall
+        let map = vec![TileType::Wall; MAP_WIDTH * MAP_HEIGHT];
+
+        // Loop
+        for _j in 0..100 {
+            for _i in 0..100 {
+                let delta_x = rand::thread_rng().gen_range(0..=1);
+                let delta_y = rand::thread_rng().gen_range(0..=1);
+                let item_sword: usize = rand::thread_rng().gen_range(0..=500) as usize;
+                let item_potion: usize = rand::thread_rng().gen_range(0..=250) as usize;
+                if item_sword == 0 {
+                    let map = vec![TileType::Floor(Some(Item::Sword)); item_sword];
+                    Self { tiles: map };
+                }
+                if item_potion == 0 {
+                    let map = vec![TileType::Floor(Some(Item::Potion)); item_potion];
+                    Self { tiles: map };
+                }
+                // Add floor in the middle of the map
+                let map = vec![TileType::Floor(None); 16 + delta_x + 16 + delta_y];
+                Self { tiles: map };
+            }
+        }
+        // TODO
+        return Self { tiles: map };
     }
 }
