@@ -6,7 +6,7 @@ use crate::{
     map::TileType,
     map::MAP_HEIGHT,
     map::MAP_WIDTH,
-    player::Player,
+    player::{Player, MAX_ITEMS},
     player_actions::{PlayerAction, PlayerMsg},
 };
 
@@ -75,12 +75,43 @@ impl State {
 
     // Market-place: Sell (item_id, price)
     pub fn sell_item(self, item_id: usize, price: usize) -> State {
-        // remove item-th in inventory
-        todo!()
+        // player
+        let player = self.player;
+        // remove the item_id in the inventory
+        let inventory_len = player.inventory.len();
+        if item_id < inventory_len {
+            let _item = player.inventory.get(item_id).cloned();
+            let mut inventory = player.inventory;
+
+            inventory.remove(item_id);
+
+            let player = Player {
+                inventory,
+                ..player
+            };
+            // todo the price
+            return State { player, ..self };
+        } else {
+            //return self;
+            todo!()
+        }
+        //todo!()
     }
 
     // Marketplace: Buy(player_address, item_id)
     pub fn buy_item(self, player_address: &str, item_id: usize) -> State {
+        //
+        let player = self.player;
+        let gold = player.gold;
+        let inventory_len = player.inventory.len();
+        if inventory_len <= MAX_ITEMS {
+            // check the price gold of player
+
+            let mut inventory = player.inventory;
+            // push item to inventory of the player
+            todo!()
+        }
+
         todo!()
     }
 
