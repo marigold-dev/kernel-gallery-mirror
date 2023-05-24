@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "sequencer-lib",
+    "sequencer-http",
+]
