@@ -19,3 +19,5 @@ tezos-smart-rollup-entrypoint = { git = "https://gitlab.com/tezos/tezos" }
 tezos-smart-rollup-mock = { git = "https://gitlab.com/tezos/tezos" }
 rand = "0.8.4"
 getrandom = { version = "0.2", features = ["js"] }
+bincode = "1.3.1"
+serde = {version = "1.0.163", features = ["derive"]}

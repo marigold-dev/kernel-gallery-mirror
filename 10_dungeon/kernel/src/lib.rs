@@ -2,9 +2,11 @@ mod map;
 mod player;
 
 mod item;
+mod market_place;
 mod player_actions;
 mod state;
 mod storage;
+use market_place::MarketPlace;
 use player_actions::PlayerMsg;
 use state::State;
 use storage::{load_state, update_state};
@@ -32,7 +34,7 @@ pub fn entry<R: Runtime>(rt: &mut R) {
                         match state {
                             Ok(state) => {
                                 rt.write_debug("Calling transtion");
-                                let next_state = state.transition(player_action);
+                                let next_state = state.transition(player_action, &player_address);
                                 let _ = update_state(rt, &player_address, &next_state);
                             }
                             _ => {}
@@ -54,6 +56,7 @@ mod tests {
     use crate::{
         item::{self, Item},
         map::{Map, TileType, MAP_HEIGHT, MAP_WIDTH},
+        market_place::MarketPlace,
         player::Player,
         state,
     };
@@ -104,6 +107,8 @@ mod tests {
         let state = state::State {
             map: Map::new(),
             player: Player::new(sword_position.0, sword_position.1),
+            //TODO
+            market_place: MarketPlace::new(),
         };
 
         let state = state.pick_up();
@@ -126,6 +131,8 @@ mod tests {
         let state = state::State {
             map: Map::new(),
             player: Player::new(sword_position.0, sword_position.1),
+            //TODO
+            market_place: MarketPlace::new(),
         };
 
         let state = state::State::pick_up(state);

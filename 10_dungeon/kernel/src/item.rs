@@ -1,4 +1,6 @@
-#[derive(Clone, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Item {
     Sword,
     Potion,

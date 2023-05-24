@@ -1,3 +1,5 @@
+use crate::item::Item;
+
 // Define a player message with the publicKey bind to it
 pub struct PlayerMsg {
     pub public_key: String,
@@ -15,7 +17,7 @@ pub enum PlayerAction {
     // Sell(ItemId, Price)
     Sell(usize, usize),
     // Buy(PlayerAddress, ItemId)
-    Buy(String, usize),
+    Buy(String, Item),
 }
 
 // convert bytes -> playerAction need to have the implement of tryFrom

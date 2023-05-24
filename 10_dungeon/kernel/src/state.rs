@@ -1,13 +1,12 @@
-use tezos_smart_rollup_encoding::public_key_hash;
-
 use crate::{
-    item,
+    item::Item,
     map::Map,
     map::TileType,
     map::MAP_HEIGHT,
     map::MAP_WIDTH,
+    market_place::{self, MarketPlace},
     player::{Player, MAX_ITEMS},
-    player_actions::{PlayerAction, PlayerMsg},
+    player_actions::PlayerAction,
 };
 
 // Define State
@@ -15,6 +14,7 @@ use crate::{
 pub struct State {
     pub map: Map,
     pub player: Player,
+    pub market_place: MarketPlace,
 }
 
 impl State {
@@ -22,6 +22,8 @@ impl State {
         Self {
             map: Map::new(),
             player: Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2),
+            // TODO
+            market_place: MarketPlace::new(),
         }
     }
 
@@ -37,7 +39,11 @@ impl State {
                 let player = self.player.add_item(item);
                 // after pickup, remove item from the map
                 let map = self.map.remove_item(x_pos, y_pos);
-                State { player, map }
+                State {
+                    player,
+                    map,
+                    ..self
+                }
             }
             Some(TileType::Floor(None)) => self,
             _ => self,
@@ -60,7 +66,11 @@ impl State {
                 match item {
                     Some(item) => {
                         let map = self.map.add_item(x_pos, y_pos, item);
-                        State { player, map }
+                        State {
+                            player,
+                            map,
+                            ..self
+                        }
                     }
                     None => State {
                         // the player position need to be update
@@ -74,45 +84,63 @@ impl State {
     }
 
     // Market-place: Sell (item_id, price)
-    pub fn sell_item(self, item_id: usize, price: usize) -> State {
-        // player
-        let player = self.player;
-        // remove the item_id in the inventory
-        let inventory_len = player.inventory.len();
-        if item_id < inventory_len {
-            let _item = player.inventory.get(item_id).cloned();
-            let mut inventory = player.inventory;
+    pub fn sell_item(self, current_player_address: &str, item_id: usize, price: usize) -> State {
+        let item: Option<Item> = self.player.inventory.get(item_id).cloned();
+        match item {
+            Some(item) => {
+                let mut market_place = self.market_place;
+                let mut inventory = self.player.inventory;
 
-            inventory.remove(item_id);
+                inventory.remove(item_id);
+                let player = Player {
+                    inventory,
+                    ..self.player
+                };
+                market_place.sell_item(current_player_address, item, price);
 
-            let player = Player {
-                inventory,
-                ..player
-            };
-            // todo the price
-            return State { player, ..self };
-        } else {
-            //return self;
-            todo!()
+                State {
+                    player,
+                    market_place,
+                    ..self
+                }
+            }
+
+            None => self,
         }
-        //todo!()
     }
 
     // Marketplace: Buy(player_address, item_id)
-    pub fn buy_item(self, player_address: &str, item_id: usize) -> State {
+    pub fn buy_item(self, player_address: &str, item: Item) -> State {
         //
         let player = self.player;
         let gold = player.gold;
         let inventory_len = player.inventory.len();
-        if inventory_len <= MAX_ITEMS {
-            // check the price gold of player
+        let mut market_place = self.market_place;
 
-            let mut inventory = player.inventory;
-            // push item to inventory of the player
-            todo!()
+        // check the inventory length
+        if inventory_len > MAX_ITEMS {
+            return self;
         }
 
-        todo!()
+        let price = self.market_place.get_price(player_address, item);
+
+        match price {
+            None => self,
+            Some(price) => {
+                if gold < price {
+                    return self;
+                }
+                market_place.buy_item(player_address, item);
+                // then add the item to the inventory
+                let player = player.add_item(item);
+
+                State {
+                    player,
+                    market_place,
+                    ..self
+                }
+            }
+        }
     }
 
     fn update_player(self, player: Player) -> State {
@@ -123,7 +151,7 @@ impl State {
         }
     }
 
-    pub fn transition(self, player_action: PlayerAction) -> State {
+    pub fn transition(self, player_action: PlayerAction, current_player_address: &str) -> State {
         match player_action {
             PlayerAction::MoveRight => {
                 let player = self.player.clone();
@@ -143,8 +171,10 @@ impl State {
             }
             PlayerAction::PickUp => self.pick_up(),
             PlayerAction::Drop(item_position) => self.drop_item(item_position),
-            PlayerAction::Sell(item_id, price) => self.sell_item(item_id, price),
-            PlayerAction::Buy(player_address, item_id) => self.buy_item(&player_address, item_id),
+            PlayerAction::Sell(item_id, price) => {
+                self.sell_item(current_player_address, item_id, price)
+            }
+            PlayerAction::Buy(player_address, item) => self.buy_item(&player_address, item),
         }
     }
 }

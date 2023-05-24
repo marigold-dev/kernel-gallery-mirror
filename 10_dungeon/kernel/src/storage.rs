@@ -1,6 +1,12 @@
-use crate::item::Item;
+use bincode::{deserialize, Error};
+use std::collections::HashMap;
+use std::hash::Hash;
+
+use crate::item::{self, Item};
 use crate::map::{Map, TileType, MAP_HEIGHT, MAP_WIDTH};
-use crate::player::{self, Player, MAX_ITEMS};
+use crate::market_place::{self, MarketPlace};
+use crate::player::{Player, MAX_ITEMS};
+use crate::player_actions::PlayerAction;
 use crate::state::State;
 use tezos_smart_rollup_host::path::{concat, OwnedPath, RefPath};
 use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
@@ -186,15 +192,50 @@ fn load_map<R: Runtime>(rt: &mut R) -> Result<Map, RuntimeError> {
     }
 }
 
+fn load_market_place<R: Runtime>(
+    rt: &mut R,
+    player_address: &str,
+) -> Result<MarketPlace, RuntimeError> {
+    let market_place_path = market_place_key(player_address);
+    let market_place_exists = rt.store_has(&market_place_path)?;
+
+    match market_place_exists {
+        Some(market_place) => {
+            // Todo max len
+            let market_place: Result<Vec<u8>, RuntimeError> =
+                rt.store_read(&MARKET_PLACE_PATH, 0, 100);
+
+            let inner: Result<HashMap<(String, Item), usize>, Error> = match market_place {
+                Ok(market_place) => bincode::deserialize(&market_place),
+                _ => todo!(),
+            };
+
+            let inner = match inner {
+                Ok(inner) => {
+                    let market_place = MarketPlace { inner };
+                    Ok(market_place)
+                }
+                _ => Ok(MarketPlace {
+                    inner: HashMap::new(),
+                }),
+            };
+        }
+        // if there is none then it is new hashmap
+        _ => todo!(),
+    };
+}
+
 // load_state will call the load_olayer and load_map
 pub fn load_state<R: Runtime>(rt: &mut R, player_address: &str) -> Result<State, RuntimeError> {
-    // first load the player
     let player = load_player(rt, player_address)?;
-    // then load the map
     let map = load_map(rt)?;
-    // return the new state
+    let market_place = load_market_place(rt, player_address)?;
 
-    Ok(State { player, map })
+    Ok(State {
+        player,
+        map,
+        market_place,
+    })
 }
 
 fn update_player<R: Runtime>(
@@ -245,6 +286,38 @@ fn update_map<R: Runtime>(rt: &mut R, map: &Map) -> Result<(), RuntimeError> {
     Ok(())
 }
 
+// todo update_marketplace
+fn update_market_place<R: Runtime>(
+    rt: &mut R,
+    player_address: &str,
+    market_place: &MarketPlace,
+) -> Result<(), RuntimeError> {
+    // update index
+    let index: Vec<(String, Item)> = market_place.inner.keys().cloned().collect();
+    let bytes = bincode::serialize(&index).map_err(|_| RuntimeError::DecodingError)?;
+    let bytes_size = bytes.len().to_be_bytes();
+
+    // 00000032[list]
+    // save data with non specific size
+    rt.store_write(&MARKET_PLACE_PATH, &bytes_size, 0)?;
+    rt.store_write(&MARKET_PLACE_PATH, &bytes, bytes_size.len())?;
+
+    // REMOVE convert inner types to bytes
+    /*for ((address, item), price) in &market_place.inner {
+        let price = price.to_be_bytes();
+        match item {
+            Item::Potion => {
+                let () = rt.store_write(&market_place_value_sword(player_address), &price, 0)?;
+            }
+            Item::Sword => {
+                let () = rt.store_write(&market_place_value_potion(player_address), &price, 0)?;
+            }
+        }
+    }*/
+
+    Ok(())
+}
+
 pub fn update_state<R: Runtime>(
     rt: &mut R,
     player_address: &str,
@@ -252,6 +325,8 @@ pub fn update_state<R: Runtime>(
 ) -> Result<(), RuntimeError> {
     update_player(rt, player_address, &state.player)?;
     update_map(rt, &state.map)?;
+    // TODO update marketplace
+    update_market_place(rt, player_address, &state.market_place)?;
 
     Ok(())
 }
