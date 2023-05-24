@@ -61,8 +61,10 @@ impl Kernel for MyKernel {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let sled_database_uri = "/tmp/sequencer-storage";
-    let tezos_node_uri = "http://localhost:8732";
-    let rollup_node_uri = "http://localhost:8732";
+    /*let tezos_node_uri = "http://localhost:8732";
+    let rollup_node_uri = "http://localhost:8732";*/
+    let tezos_node_uri = "http://ghostnet.tezos.marigold.dev";
+    let rollup_node_uri = "http://ghostnet.tezos.marigold.dev";
 
     let node =
         sequencer::NativeNode::new::<MyKernel>(sled_database_uri, tezos_node_uri, rollup_node_uri);
