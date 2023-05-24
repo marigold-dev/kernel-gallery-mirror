@@ -41,23 +41,24 @@
   width: 16px;
   height: 16px;
   background-color: white;
+  background-image: url(pic/cell.png);
   border: 1px solid black;
 }
 
 .player {
-  background-color: green;
+  background-image: url(pic/Player16x16.png);
 }
 
 .sword {
-  background-color: purple;
+  background-image: url(pic/sword_16x16.png);
 }
 
 .potion {
-  background-color: blue;
+  background-image: url(pic/items.png);
 }
 
 .wall {
-  background-color: black;
+  background-image: url(pic/wall_16x16.png);
 }
 
 .line {
@@ -72,6 +73,14 @@
   margin-top: 32px;
   display: flex;
   align-items: flex-end;
+}
+
+.buttons-players {
+  margin-top: 32px;
+  margin-right: 60px;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: row;
 }
 
 .up-down {

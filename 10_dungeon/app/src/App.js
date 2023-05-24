@@ -294,6 +294,13 @@ const App = () => {
           // Add buttons for player actions
         }
         <div className="buttons">
+          {
+            // Add buttons to switch between players
+          }
+          <div className="buttons-players">
+            <button onClick={() => setSecret(ALICE_SECRET)}>ALICE</button>
+            <button onClick={() => setSecret(BOB_SECRET)}>BOB</button>
+          </div>
           <button onClick={moveLeft}>left</button>
 
           <div className="up-down">
@@ -301,14 +308,8 @@ const App = () => {
             <button onClick={moveDown}>down</button>
           </div>
           <button onClick={moveRight}>right</button>
-          <button onClick={pickUp}>pick up</button>
+          <button onClick={pickUp}>pick up (y)</button>
         </div>
-
-        {
-          // Add buttons to switch between players
-        }
-        <button onClick={() => setSecret(ALICE_SECRET)}>ALICE</button>
-        <button onClick={() => setSecret(BOB_SECRET)}>BOB</button>
         {
           // Display inventory belows the buttons
         }
