@@ -113,10 +113,7 @@ impl Database for SledDatabase {
         let node = self.read_node(path)?;
         match node {
             None => Ok(Vec::default()),
-            Some(TreeNode { children, .. }) => {
-                println!("children of the node {}: {:?}", path, children);
-                Ok(children)
-            }
+            Some(TreeNode { children, .. }) => Ok(children),
         }
     }
 

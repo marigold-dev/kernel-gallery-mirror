@@ -148,11 +148,23 @@ where
             .map_err(|_| RuntimeError::HostErr(Error::StoreInvalidKey))?;
 
         let src = check_data_size(src)?;
-        let data = src.iter().skip(at_offset).copied().collect::<Vec<u8>>();
-        let res = db.write(path, &data);
-        match res {
-            Ok(_) => Ok(()),
-            Err(_) => Err(RuntimeError::HostErr(Error::GenericInvalidAccess)),
+
+        let bytes = db.read(path).map_err(|_| RuntimeError::DecodingError)?;
+        match bytes {
+            Some(bytes) => {
+                let mut data = bytes.iter().take(at_offset).cloned().collect::<Vec<u8>>();
+                data.append(&mut src.to_vec());
+                let _ = db
+                    .write(path, &data)
+                    .map_err(|_| RuntimeError::HostErr(Error::GenericInvalidAccess))?;
+                Ok(())
+            }
+            None => {
+                let _ = db
+                    .write(path, src)
+                    .map_err(|_| RuntimeError::HostErr(Error::GenericInvalidAccess))?;
+                Ok(())
+            }
         }
     }
 
