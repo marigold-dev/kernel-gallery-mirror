@@ -1,12 +1,10 @@
-use bincode::{deserialize, Error};
 use std::collections::HashMap;
-use std::hash::Hash;
 
-use crate::item::{self, Item};
+use crate::item::Item;
 use crate::map::{Map, TileType, MAP_HEIGHT, MAP_WIDTH};
-use crate::market_place::{self, MarketPlace};
+use crate::market_place::MarketPlace;
 use crate::player::{Player, MAX_ITEMS};
-use crate::player_actions::PlayerAction;
+
 use crate::state::State;
 use tezos_smart_rollup_host::path::{concat, OwnedPath, RefPath};
 use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
@@ -198,7 +196,7 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
     match market_place_exists {
         Some(_) => {
             // First we start from 0 to 8
-            let index_size: Vec<u8> = rt.store_read(&MARKET_PLACE_PATH, 0, 8)?; // because usize is represented with 8 bytes, I guess
+            let index_size: Vec<u8> = rt.store_read(&MARKET_PLACE_PATH, 0, 8)?; // because usize is represented with 8 bytes
             println!("{:?}", index_size);
             let index_size = index_size
                 .try_into()
@@ -210,6 +208,7 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
             let index: Vec<(String, Item)> =
                 bincode::deserialize(&index).map_err(|_| RuntimeError::DecodingError)?;
 
+            // create a new market place
             let mut inner = HashMap::new();
 
             for (player_address, item) in index {
@@ -236,7 +235,7 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
 
             Ok(MarketPlace { inner })
         }
-        // if there is none then it is new hashmap
+        // if there is none then it is new hashmap using the default
         _ => Ok(MarketPlace::default()),
     }
 }
@@ -317,7 +316,7 @@ fn update_market_place<R: Runtime>(
     rt.store_write(&MARKET_PLACE_PATH, &bytes_size, 0)?;
     rt.store_write(&MARKET_PLACE_PATH, &bytes, bytes_size.len())?;
 
-    // convert inner types to bytes
+    // matching the item to write
     for ((address, item), price) in &market_place.inner {
         let price = price.to_be_bytes();
         match item {
@@ -342,8 +341,6 @@ pub fn update_state<R: Runtime>(
 ) -> Result<(), RuntimeError> {
     update_player(rt, player_address, &state.player)?;
     update_map(rt, &state.map)?;
-    // TODO update marketplace
     update_market_place(rt, &state.market_place)?;
-
     Ok(())
 }

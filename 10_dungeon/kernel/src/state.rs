@@ -109,7 +109,7 @@ impl State {
         }
     }
 
-    // Marketplace: Buy(player_address, item_id)
+    // Marketplace: Buy(player_address, item)
     pub fn buy_item(self, player_address: &str, item: Item) -> State {
         let price = self.market_place.get_price(player_address, item);
 

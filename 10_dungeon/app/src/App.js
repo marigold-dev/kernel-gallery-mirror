@@ -167,11 +167,20 @@ const App = () => {
       // split the inventory to string
       const inventory = splitNChars(inventory_bytes);
 
+      // fetching the gold of the player
+
+      const res5 = await fetch(
+        `http://127.0.0.1:8080/state/value?path=/players/${player_address}/gold`
+      );
+
+      const gold_bytes = await res5.text();
+      const gold = Number.parseInt(gold_bytes, 16);
+
       updatePlayer({
         x: 0,
         y: 0,
         inventory,
-        gold: 10000,
+        gold: 1000,
       });
 
       // Map -> Item
