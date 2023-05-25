@@ -1,6 +1,6 @@
 # Todo
 
-- display the gold
+- display the gold (done)
 - display the marketplace
 - a button next to the inventory to sell the item
 - a button inside the marketplace to buy an item
