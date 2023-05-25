@@ -1,5 +1,10 @@
 # Todo
 
+- display the gold
+- display the marketplace
+- a button next to the inventory to sell the item
+- a button inside the marketplace to buy an item
+
 # Implementation of the market place
 
 1. adding a field to players: `gold`, default value: 1000 (usize)

@@ -111,28 +111,27 @@ impl State {
 
     // Marketplace: Buy(player_address, item_id)
     pub fn buy_item(self, player_address: &str, item: Item) -> State {
-        //
-        let player = self.player;
-        let gold = player.gold;
-        let inventory_len = player.inventory.len();
-        let mut market_place = self.market_place;
+        let price = self.market_place.get_price(player_address, item);
 
         // check the inventory length
+        let inventory_len = self.player.inventory.len();
         if inventory_len > MAX_ITEMS {
             return self;
         }
 
-        let price = self.market_place.get_price(player_address, item);
+        let gold = &self.player.gold;
 
         match price {
             None => self,
             Some(price) => {
-                if gold < price {
+                if gold < &price {
                     return self;
                 }
+                let mut market_place = self.market_place;
+
                 market_place.buy_item(player_address, item);
                 // then add the item to the inventory
-                let player = player.add_item(item);
+                let player = self.player.add_item(item);
 
                 State {
                     player,

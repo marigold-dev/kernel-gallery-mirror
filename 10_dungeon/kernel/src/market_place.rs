@@ -9,11 +9,17 @@ pub struct MarketPlace {
     pub inner: HashMap<(String, Item), usize>,
 }
 
-impl MarketPlace {
-    pub fn new() -> Self {
+impl Default for MarketPlace {
+    fn default() -> Self {
         // From the beginning the Marketplace is empty
         let inner = HashMap::new();
         MarketPlace { inner }
+    }
+}
+
+impl MarketPlace {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     pub fn get_price(&self, player_address: &str, item: Item) -> Option<usize> {

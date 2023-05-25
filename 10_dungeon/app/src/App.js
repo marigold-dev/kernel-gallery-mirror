@@ -171,6 +171,7 @@ const App = () => {
         x: 0,
         y: 0,
         inventory,
+        gold: 10000,
       });
 
       // Map -> Item
@@ -315,6 +316,7 @@ const App = () => {
         }
         <div>
           <div>Inventory:</div>
+          {player && player.gold && <div>Gold: {player.gold}</div>}
           {player.inventory.map((item, i) => {
             // matching the items as before for display
             switch (item) {
