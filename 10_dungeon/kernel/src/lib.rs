@@ -7,9 +7,10 @@ mod player_actions;
 mod state;
 mod storage;
 use market_place::MarketPlace;
+use player::Player;
 use player_actions::PlayerMsg;
 use state::State;
-use storage::{load_state, update_state};
+use storage::{load_player, load_state, update_player, update_state};
 use tezos_smart_rollup_entrypoint::kernel_entry;
 use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
 
@@ -30,12 +31,33 @@ pub fn entry<R: Runtime>(rt: &mut R) {
                             public_key: player_address,
                             action: player_action,
                         } = player_msg;
+
+                        let other_placer: Option<Player> = match &player_action {
+                            player_actions::PlayerAction::Buy(player_address, _) => {
+                                load_player(rt, player_address).ok()
+                            }
+                            _ => None,
+                        };
+
                         let state: Result<State, RuntimeError> = load_state(rt, &player_address);
                         match state {
                             Ok(state) => {
                                 rt.write_debug("Calling transtion");
-                                let next_state = state.transition(player_action, &player_address);
+                                let (next_state, player) = state.transition(
+                                    other_placer,
+                                    player_action.clone(),
+                                    &player_address,
+                                );
                                 let _ = update_state(rt, &player_address, &next_state);
+                                match player {
+                                    None => {}
+                                    Some(player) => match &player_action {
+                                        player_actions::PlayerAction::Buy(address, _) => {
+                                            let _ = update_player(rt, &address, &player);
+                                        }
+                                        _ => {}
+                                    },
+                                }
                             }
                             _ => {}
                         }

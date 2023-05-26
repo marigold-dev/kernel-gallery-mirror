@@ -99,4 +99,11 @@ impl Player {
             ..self
         }
     }
+
+    pub fn add_gold(self, amount: usize) -> Player {
+        Player {
+            gold: self.gold + amount,
+            ..self
+        }
+    }
 }

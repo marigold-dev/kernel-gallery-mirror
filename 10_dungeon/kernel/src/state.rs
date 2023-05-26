@@ -110,22 +110,27 @@ impl State {
     }
 
     // Marketplace: Buy(player_address, item)
-    pub fn buy_item(self, player_address: &str, item: Item) -> State {
+    pub fn buy_item(
+        self,
+        player_address: &str,
+        item: Item,
+        other_player: Player,
+    ) -> (State, Player) {
         let price = self.market_place.get_price(player_address, item);
 
         // check the inventory length
         let inventory_len = self.player.inventory.len();
         if inventory_len > MAX_ITEMS {
-            return self;
+            return (self, other_player);
         }
 
         let gold = &self.player.gold.clone();
 
         match price {
-            None => self,
+            None => (self, other_player),
             Some(price) => {
                 if gold < &price {
-                    return self;
+                    return (self, other_player);
                 }
                 let mut market_place = self.market_place;
 
@@ -136,12 +141,16 @@ impl State {
                 let player = self.player;
                 let player = player.add_item(item);
                 let player = player.remove_gold(price);
+                let other_player = other_player.add_gold(price);
 
-                State {
-                    player,
-                    market_place,
-                    ..self
-                }
+                (
+                    State {
+                        player,
+                        market_place,
+                        ..self
+                    },
+                    other_player,
+                )
             }
         }
     }
@@ -154,30 +163,44 @@ impl State {
         }
     }
 
-    pub fn transition(self, player_action: PlayerAction, current_player_address: &str) -> State {
-        match player_action {
-            PlayerAction::MoveRight => {
+    pub fn transition(
+        self,
+        other_player: Option<Player>,
+        player_action: PlayerAction,
+        current_player_address: &str,
+    ) -> (State, Option<Player>) {
+        match (other_player, player_action) {
+            (_, PlayerAction::MoveRight) => {
                 let player = self.player.clone();
-                self.update_player(player.move_right())
+                let state = self.update_player(player.move_right());
+                (state, None)
             }
-            PlayerAction::MoveLeft => {
+            (_, PlayerAction::MoveLeft) => {
                 let player = self.player.clone();
-                self.update_player(player.move_left())
+                let state = self.update_player(player.move_left());
+                (state, None)
             }
-            PlayerAction::MoveUp => {
+            (_, PlayerAction::MoveUp) => {
                 let player = self.player.clone();
-                self.update_player(player.move_up())
+                let state = self.update_player(player.move_up());
+                (state, None)
             }
-            PlayerAction::MoveDown => {
+            (_, PlayerAction::MoveDown) => {
                 let player = self.player.clone();
-                self.update_player(player.move_down())
+                let state = self.update_player(player.move_down());
+                (state, None)
             }
-            PlayerAction::PickUp => self.pick_up(),
-            PlayerAction::Drop(item_position) => self.drop_item(item_position),
-            PlayerAction::Sell(item_id, price) => {
-                self.sell_item(current_player_address, item_id, price)
+            (_, PlayerAction::PickUp) => (self.pick_up(), None),
+            (_, PlayerAction::Drop(item_position)) => (self.drop_item(item_position), None),
+            (_, PlayerAction::Sell(item_id, price)) => {
+                let state = self.sell_item(current_player_address, item_id, price);
+                (state, None)
             }
-            PlayerAction::Buy(player_address, item) => self.buy_item(&player_address, item),
+            (Some(other_player), PlayerAction::Buy(player_address, item)) => {
+                let (state, player) = self.buy_item(&player_address, item, other_player);
+                (state, Some(player))
+            }
+            _ => (self, None),
         }
     }
 }

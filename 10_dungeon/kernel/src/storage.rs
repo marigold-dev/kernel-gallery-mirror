@@ -104,7 +104,7 @@ fn market_place_value_potion(player_address: &str) -> OwnedPath {
 }
 
 // load_player for load_state
-fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Player, RuntimeError> {
+pub fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Player, RuntimeError> {
     let player_path = player_key(player_address);
 
     let player_exists = rt.store_has(&player_path)?;
@@ -262,7 +262,7 @@ pub fn load_state<R: Runtime>(rt: &mut R, player_address: &str) -> Result<State,
     })
 }
 
-fn update_player<R: Runtime>(
+pub fn update_player<R: Runtime>(
     rt: &mut R,
     player_address: &str,
     player: &Player,

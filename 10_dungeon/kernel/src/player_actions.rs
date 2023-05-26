@@ -6,6 +6,7 @@ pub struct PlayerMsg {
     pub action: PlayerAction,
 }
 
+#[derive(Clone)]
 pub enum PlayerAction {
     MoveRight,
     MoveLeft,
