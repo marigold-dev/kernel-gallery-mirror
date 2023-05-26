@@ -10,7 +10,8 @@ members = [
     "06_counter_kernel",
     "07_upgrade_kernel",
     "07_upgrade_kernel/upgrade-client" ,
-    "09_tzwitter_app/kernel" 
+    "09_tzwitter_app/kernel",
+    "10_dungeon/kernel",
 ]
 
 # FIXME: what is this? Do we need it?
