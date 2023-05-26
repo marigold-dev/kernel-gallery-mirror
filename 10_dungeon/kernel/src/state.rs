@@ -22,7 +22,6 @@ impl State {
         Self {
             map: Map::new(),
             player: Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2),
-            // TODO
             market_place: MarketPlace::new(),
         }
     }
@@ -135,7 +134,7 @@ impl State {
                 let mut market_place = self.market_place;
 
                 market_place.buy_item(player_address, item);
-                println!("after buy item: {:?}", market_place.inner);
+                //println!("after buy item: {:?}", market_place.inner);
 
                 // then add the item to the inventory
                 let player = self.player;

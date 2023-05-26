@@ -6,7 +6,6 @@ mod market_place;
 mod player_actions;
 mod state;
 mod storage;
-use market_place::MarketPlace;
 use player::Player;
 use player_actions::PlayerMsg;
 use state::State;

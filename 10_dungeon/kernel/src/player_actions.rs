@@ -65,15 +65,22 @@ impl TryFrom<Vec<u8>> for PlayerMsg {
                     // drop with 3 bytes
                     [48, 54, 48, 48] => Ok(PlayerAction::Drop(0)),
                     [48, 54, 48, 49] => Ok(PlayerAction::Drop(1)),
-                    // TODO: sell
+                    // sell
                     [48, 55, 48, 48] => Ok(PlayerAction::Sell(0, 100)),
                     [48, 55, 48, 49] => Ok(PlayerAction::Sell(1, 100)),
-                    // TODO: buy
+                    // buy sword
                     [48, 56, 48, 49, address @ ..] => {
                         let address: &str = &String::from_utf8(address.to_vec()).map_err(|_| ())?;
                         let address: String = address.to_string();
                         println!("address of the seller: {}", address);
                         Ok(PlayerAction::Buy(address, Item::Sword))
+                    }
+                    // buy potion
+                    [48, 56, 48, 50, address @ ..] => {
+                        let address: &str = &String::from_utf8(address.to_vec()).map_err(|_| ())?;
+                        let address: String = address.to_string();
+                        println!("address of the seller: {}", address);
+                        Ok(PlayerAction::Buy(address, Item::Potion))
                     }
                     _ => Err(()),
                 }?;

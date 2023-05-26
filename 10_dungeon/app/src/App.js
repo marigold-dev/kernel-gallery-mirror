@@ -207,8 +207,10 @@ const App = () => {
       );
       const sellers = await marketplace_res.json();
 
+      // if there is no market place, create one
       let market_place = [];
       for (let index = 0; index < sellers.length; index++) {
+        // get the address from the seller index
         const address = sellers[index];
 
         const itemsRes = await fetch(
@@ -216,15 +218,18 @@ const App = () => {
         );
         const items = await itemsRes.json();
 
+        // going to the items
         for (let indexItem = 0; indexItem < items.length; indexItem++) {
           const itemId = items[indexItem];
 
+          // getting the price
           const priceRes = await fetch(
             `http://127.0.0.1:8080/state/value?path=/market-place/${address}/${itemId}/value`
           );
           const price_bytes = await priceRes.text();
           const price = Number.parseInt(price_bytes, 16);
 
+          // push the sell into market place
           market_place.push({
             address,
             item: itemId,
@@ -232,6 +237,7 @@ const App = () => {
           });
         }
       }
+      // update the market place
       setMarketplace(market_place);
     }, 500); // The interval duration is 500ms
     return () => {

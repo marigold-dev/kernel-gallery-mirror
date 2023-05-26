@@ -31,9 +31,21 @@ impl Map {
 
         // TODO: write a function convert from_string(string:String) -> Map
         // place wall at the 0
-        map[0] = TileType::Wall;
-        // place the sword on the 48 on the map
+        //map[0] = TileType::Wall;
+        //Self::random_map();
 
+        // Map
+        for x in 0..10 {
+            map[map_idx(x, 0)] = TileType::Wall;
+            map[map_idx(5, 5)] = TileType::Wall;
+        }
+
+        for y in 0..10 {
+            map[map_idx(0, y)] = TileType::Wall;
+            map[map_idx(9, y)] = TileType::Wall;
+        }
+
+        // place sword
         map[48] = TileType::Floor(Some(Item::Sword));
         map[970] = TileType::Floor(Some(Item::Potion));
 
@@ -105,8 +117,8 @@ impl Map {
         let map = vec![TileType::Wall; MAP_WIDTH * MAP_HEIGHT];
 
         // Loop
-        for _j in 0..100 {
-            for _i in 0..100 {
+        for _j in 0..50 {
+            for _i in 0..50 {
                 let delta_x = rand::thread_rng().gen_range(0..=1);
                 let delta_y = rand::thread_rng().gen_range(0..=1);
                 let item_sword: usize = rand::thread_rng().gen_range(0..=500) as usize;
