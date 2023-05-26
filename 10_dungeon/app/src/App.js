@@ -180,7 +180,7 @@ const App = () => {
         x: 0,
         y: 0,
         inventory,
-        gold: 1000,
+        gold,
       });
 
       // Map -> Item
