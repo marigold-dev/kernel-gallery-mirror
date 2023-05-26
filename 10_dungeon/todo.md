@@ -1,9 +1,8 @@
-# Todo
+# Todo for demo
 
-- display the gold (done)
-- display the marketplace
-- a button next to the inventory to sell the item
-- a button inside the marketplace to buy an item
+- infra: make the game run online (instead of localhost)
+- people can connect to their wallet and play
+- Demo slices (diagram)
 
 # Implementation of the market place
 

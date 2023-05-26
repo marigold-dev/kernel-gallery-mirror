@@ -342,8 +342,6 @@ fn update_market_place<R: Runtime>(
         }
     }
 
-    println!("market place saved");
-
     Ok(())
 }
 

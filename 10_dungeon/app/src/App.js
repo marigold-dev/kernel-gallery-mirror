@@ -2,33 +2,8 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { InMemorySigner } from "@taquito/signer";
-
-// Generate these secret keys by using the: octez-client gens key alice/bob
-// these keys are uncrypted secret keys
-const BOB_SECRET = "edsk31vznjHSSpGExDMHYASz45VZqXN4DPxvsa4hAyY8dHM28cZzp6";
-const ALICE_SECRET = "edsk4QLrcijEffxV31gGdN2HU7UpyJjA8drFoNcmnB28n89YjPNRFm";
-
-const move = (data, signer) => async () => {
-  const address = await signer.publicKeyHash();
-
-  // The data send to rollup is 01->0... We add the public key to the
-  // data and connect it with the `-`, later we can retrieve the {data}
-  // from this combination.
-  // {publicKeyHash}-{data}
-  const formated = `${address}-${data}`;
-  // we need to convert to string to hex so that the sequencer
-  const bytes = Buffer.from(formated).toString("hex");
-
-  const action = { data: bytes };
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-
-  const res = await fetch("http://localhost:8080/operations", {
-    body: JSON.stringify(action),
-    method: "POST",
-    headers,
-  });
-};
+import { move } from "./action.js";
+import { BOB_SECRET, ALICE_SECRET } from "./player_adds.js";
 
 /**
  * Split a string into n slices
@@ -64,7 +39,6 @@ const App = () => {
 
   // Player actions
   const moveUp = move("01", signer);
-
   const moveDown = move("02", signer);
   const moveLeft = move("03", signer);
   const moveRight = move("04", signer);
@@ -240,6 +214,7 @@ const App = () => {
       // update the market place
       setMarketplace(market_place);
     }, 500); // The interval duration is 500ms
+
     return () => {
       // When the component umount, or refreshed we remove the interval
       clearInterval(interval);
@@ -417,6 +392,9 @@ const App = () => {
             }
           })}
         </div>
+        {
+          // Display market place
+        }
         <div style={{ marginTop: "24px" }}>
           <div>Marketplace:</div>
           {marketplace.map((item_to_sell, i) => {
