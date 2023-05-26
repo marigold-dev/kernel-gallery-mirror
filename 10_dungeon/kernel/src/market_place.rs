@@ -30,6 +30,7 @@ impl MarketPlace {
 
     pub fn buy_item(&mut self, player_address: &str, item: Item) {
         self.inner.remove(&(player_address.to_string(), item));
+        println!("buy item: {:?}", self.inner);
     }
 
     // Add sell

@@ -54,6 +54,9 @@ const App = () => {
     InMemorySigner.fromSecretKey(secret).then(setSigner);
   };
 
+  // marketplace
+  const [marketplace, setMarketplace] = useState([]);
+
   // At the start we use bob
   useEffect(() => {
     setSecret(BOB_SECRET);
@@ -69,6 +72,8 @@ const App = () => {
   // drop needs to know the position of the item in the inventory
   // to be able to drop them
   const drop = (itemPosition) => move(`060${itemPosition}`, signer);
+  const sell = (itemPosition) => move(`070${itemPosition}`, signer);
+  const buy = (address, itemId) => move(`080${itemId}${address}`, signer);
 
   // handle keyboards
   const onKeyDown = (e) => {
@@ -194,6 +199,40 @@ const App = () => {
 
       // we can put new value to the map
       updateMap(map);
+
+      // fetch the market place
+      console.log("fetch the market place");
+      const marketplace_res = await fetch(
+        "http://127.0.0.1:8080/state/subkeys?path=/market-place"
+      );
+      const sellers = await marketplace_res.json();
+
+      let market_place = [];
+      for (let index = 0; index < sellers.length; index++) {
+        const address = sellers[index];
+
+        const itemsRes = await fetch(
+          `http://127.0.0.1:8080/state/subkeys?path=/market-place/${address}`
+        );
+        const items = await itemsRes.json();
+
+        for (let indexItem = 0; indexItem < items.length; indexItem++) {
+          const itemId = items[indexItem];
+
+          const priceRes = await fetch(
+            `http://127.0.0.1:8080/state/value?path=/market-place/${address}/${itemId}/value`
+          );
+          const price_bytes = await priceRes.text();
+          const price = Number.parseInt(price_bytes, 16);
+
+          market_place.push({
+            address,
+            item: itemId,
+            price,
+          });
+        }
+      }
+      setMarketplace(market_place);
     }, 500); // The interval duration is 500ms
     return () => {
       // When the component umount, or refreshed we remove the interval
@@ -350,6 +389,7 @@ const App = () => {
                       // click
                     }
                     <button onClick={drop(i)}>drop</button>
+                    <button onClick={sell(i)}>sell</button>
                   </div>
                 );
               case "02":
@@ -363,11 +403,28 @@ const App = () => {
                     />
                     <div className="item-name">Potion</div>
                     <button onClick={drop(i)}>drop</button>
+                    <button onClick={sell(i)}>sell</button>
                   </div>
                 );
               default:
                 return null;
             }
+          })}
+        </div>
+        <div style={{ marginTop: "24px" }}>
+          <div>Marketplace:</div>
+          {marketplace.map((item_to_sell, i) => {
+            const { address, price, item } = item_to_sell;
+            const item_name = item === "01" ? "sword" : "potion";
+
+            return (
+              <div>
+                {address} - {item_name} - {price}{" "}
+                <button onClick={buy(address, Number.parseInt(item))}>
+                  buy
+                </button>
+              </div>
+            );
           })}
         </div>
       </header>

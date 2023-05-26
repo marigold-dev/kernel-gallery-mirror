@@ -192,7 +192,7 @@ fn load_map<R: Runtime>(rt: &mut R) -> Result<Map, RuntimeError> {
 
 fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError> {
     let market_place_exists = rt.store_has(&MARKET_PLACE_PATH)?;
-
+    println!("load market place");
     match market_place_exists {
         Some(_) => {
             // First we start from 0 to 8
@@ -202,6 +202,7 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
                 .try_into()
                 .map_err(|_| RuntimeError::DecodingError)?;
             let index_size = usize::from_be_bytes(index_size);
+            println!("load index");
 
             // then we read again start from 8 to the size of the index
             let index = rt.store_read(&MARKET_PLACE_PATH, 8, index_size)?;
@@ -210,15 +211,20 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
 
             // create a new market place
             let mut inner = HashMap::new();
+            println!("load inner");
 
             for (player_address, item) in index {
                 match item {
                     Item::Sword => {
+                        println!("load sword");
                         let path = &market_place_value_sword(&player_address);
+                        println!("{:?}", &path);
                         let price = rt.store_read(path, 0, 8)?; // 8 because the price is an usize
+                        println!("{:?}", &price);
+
                         let price = price.try_into().map_err(|_| RuntimeError::DecodingError)?;
                         let price = usize::from_be_bytes(price);
-
+                        println!("sword price");
                         let _ = inner.insert((player_address, item), price);
                     }
                     Item::Potion => {
@@ -232,6 +238,9 @@ fn load_market_place<R: Runtime>(rt: &mut R) -> Result<MarketPlace, RuntimeError
                     }
                 }
             }
+
+            println!("-----------------------");
+            println!("{:?}", &inner);
 
             Ok(MarketPlace { inner })
         }
@@ -306,6 +315,10 @@ fn update_market_place<R: Runtime>(
     rt: &mut R,
     market_place: &MarketPlace,
 ) -> Result<(), RuntimeError> {
+    // delete the market place
+    rt.store_delete(&MARKET_PLACE_PATH)?;
+    // to replace it by the updated one
+
     // update index
     let index: Vec<(String, Item)> = market_place.inner.keys().cloned().collect();
     let bytes = bincode::serialize(&index).map_err(|_| RuntimeError::DecodingError)?;
@@ -321,10 +334,10 @@ fn update_market_place<R: Runtime>(
         let price = price.to_be_bytes();
         match item {
             Item::Potion => {
-                let () = rt.store_write(&market_place_value_sword(address), &price, 0)?;
+                let () = rt.store_write(&market_place_value_potion(address), &price, 0)?;
             }
             Item::Sword => {
-                let () = rt.store_write(&market_place_value_potion(address), &price, 0)?;
+                let () = rt.store_write(&market_place_value_sword(address), &price, 0)?;
             }
         }
     }

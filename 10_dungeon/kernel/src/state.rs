@@ -119,7 +119,7 @@ impl State {
             return self;
         }
 
-        let gold = &self.player.gold;
+        let gold = &self.player.gold.clone();
 
         match price {
             None => self,
@@ -130,8 +130,12 @@ impl State {
                 let mut market_place = self.market_place;
 
                 market_place.buy_item(player_address, item);
+                println!("after buy item: {:?}", market_place.inner);
+
                 // then add the item to the inventory
-                let player = self.player.add_item(item);
+                let player = self.player;
+                let player = player.add_item(item);
+                let player = player.remove_gold(price);
 
                 State {
                     player,

@@ -92,4 +92,11 @@ impl Player {
             (self, None)
         }
     }
+
+    pub fn remove_gold(self, amount: usize) -> Player {
+        Player {
+            gold: self.gold - amount,
+            ..self
+        }
+    }
 }
