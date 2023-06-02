@@ -76,10 +76,8 @@
 }
 
 .buttons-players {
-  margin-top: 32px;
-  margin-right: 60px;
+  margin-right: 70px;
   display: flex;
-  align-items: flex-end;
   flex-direction: row;
 }
 

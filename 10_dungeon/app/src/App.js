@@ -328,8 +328,8 @@ const App = () => {
             // Add buttons to switch between players
           }
           <div className="buttons-players">
-            <button onClick={() => setSecret(ALICE_SECRET)}>ALICE</button>
-            <button onClick={() => setSecret(BOB_SECRET)}>BOB</button>
+            <button onClick={() => setSecret(ALICE_SECRET)}>SAM</button>
+            <button onClick={() => setSecret(BOB_SECRET)}>GIMLI</button>
           </div>
           <button onClick={moveLeft}>left</button>
 
