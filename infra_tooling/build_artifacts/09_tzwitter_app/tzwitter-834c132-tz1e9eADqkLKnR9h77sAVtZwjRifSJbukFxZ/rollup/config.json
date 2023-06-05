@@ -1,0 +1,7 @@
+{ "smart-rollup-address": "sr1CZJvoP5VRnwacrB6BF13HfQ4dJKFhPiq7",
+  "smart-rollup-node-operator":
+    { "publish": "tz1XeW5BaTm8h4Nkp6RPWWcUEjxnVUkiKr2x",
+      "add_messages": "tz1XeW5BaTm8h4Nkp6RPWWcUEjxnVUkiKr2x",
+      "cement": "tz1XeW5BaTm8h4Nkp6RPWWcUEjxnVUkiKr2x",
+      "refute": "tz1XeW5BaTm8h4Nkp6RPWWcUEjxnVUkiKr2x" },
+  "fee-parameters": {}, "mode": "operator" }
