@@ -4,6 +4,7 @@ pub const MAX_ITEMS: usize = 2;
 
 #[derive(Clone, PartialEq)]
 pub struct Player {
+    pub address: String,
     pub x_pos: usize,
     pub y_pos: usize,
     pub inventory: Vec<Item>,
@@ -11,8 +12,9 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(x_pos: usize, y_pos: usize) -> Self {
+    pub fn new(x_pos: usize, y_pos: usize, address: String) -> Self {
         Self {
+            address,
             x_pos,
             y_pos,
             inventory: Vec::new(),
@@ -24,6 +26,7 @@ impl Player {
     pub fn move_up(&self) -> Player {
         usize::checked_sub(self.y_pos, 1)
             .map(|y_pos| Self {
+                address: self.address.clone(),
                 y_pos,
                 x_pos: self.x_pos,
                 inventory: self.inventory.clone(),
@@ -34,6 +37,7 @@ impl Player {
 
     pub fn move_down(&self) -> Player {
         Self {
+            address: self.address.clone(),
             y_pos: self.y_pos + 1,
             x_pos: self.x_pos,
             inventory: self.inventory.clone(),
@@ -44,6 +48,7 @@ impl Player {
     pub fn move_left(&self) -> Player {
         usize::checked_sub(self.x_pos, 1)
             .map(|x_pos| Self {
+                address: self.address.clone(),
                 x_pos,
                 y_pos: self.y_pos,
                 inventory: self.inventory.clone(),
@@ -54,6 +59,7 @@ impl Player {
 
     pub fn move_right(&self) -> Player {
         Self {
+            address: self.address.clone(),
             x_pos: self.x_pos + 1,
             y_pos: self.y_pos,
             inventory: self.inventory.clone(),

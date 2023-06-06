@@ -124,10 +124,11 @@ mod tests {
 
     #[test]
     fn test_pickup_item() -> () {
+        let address = "Address".to_string();
         let sword_position = idx_to_xy(48);
         let state = state::State {
             map: Map::new(),
-            player: Player::new(sword_position.0, sword_position.1),
+            player: Player::new(sword_position.0, sword_position.1, address),
             //TODO
             market_place: MarketPlace::new(),
         };
@@ -148,10 +149,11 @@ mod tests {
 
     #[test]
     fn test_drop_item() -> () {
+        let address = "Address".to_string();
         let sword_position = idx_to_xy(48);
         let state = state::State {
             map: Map::new(),
-            player: Player::new(sword_position.0, sword_position.1),
+            player: Player::new(sword_position.0, sword_position.1, address),
             //TODO
             market_place: MarketPlace::new(),
         };

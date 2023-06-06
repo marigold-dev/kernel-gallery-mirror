@@ -151,13 +151,18 @@ pub fn load_player<R: Runtime>(rt: &mut R, player_address: &str) -> Result<Playe
             let gold = usize::from_be_bytes(gold.try_into().unwrap());
 
             Ok(Player {
+                address: player_address.to_string(),
                 x_pos,
                 y_pos,
                 inventory,
                 gold,
             })
         }
-        _ => Ok(Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2)),
+        _ => Ok(Player::new(
+            MAP_WIDTH / 2,
+            MAP_HEIGHT / 2,
+            player_address.to_string(),
+        )),
     }
 }
 

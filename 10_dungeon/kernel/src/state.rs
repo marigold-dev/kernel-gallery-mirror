@@ -18,10 +18,10 @@ pub struct State {
 }
 
 impl State {
-    pub fn new() -> Self {
+    pub fn new(player_address: String) -> Self {
         Self {
             map: Map::new(),
-            player: Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2),
+            player: Player::new(MAP_WIDTH / 2, MAP_HEIGHT / 2, player_address),
             market_place: MarketPlace::new(),
         }
     }
@@ -109,12 +109,18 @@ impl State {
     }
 
     // Marketplace: Buy(player_address, item)
+    // Todo: remove player_address, because we can access the address from self.player.address
     pub fn buy_item(
         self,
         player_address: &str,
         item: Item,
         other_player: Player,
     ) -> (State, Player) {
+        // TODO: remove this condition
+        if self.player.address == other_player.address {
+            return (self, other_player);
+        }
+
         let price = self.market_place.get_price(player_address, item);
 
         // check the inventory length
