@@ -1,270 +1,64 @@
-# Dungeon game
+# Dungeon game POC
 
-One can follow the steps in `deploy.sh` to deploy the missing steps. This readme only show the major result of dungeon game that run on the smart rollup node, send external message and the debugging tool. Using the explore https://explorus.xyz/soru on MondayNet to search for the SORU address.
+This is a rollup DApp for an interactive game. This "kernel" is a program
+using the rollup kernel-SDK, sequencer prototype (low-latency node) and use the React App as its front-end.
 
-## Originate the smart rollup node with the kernel
+The project is divided into three sub projects:
 
-```
-~/tezos/octez-client originate smart rollup from tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 of kind wasm_2_0_0 of type bytes with kernel "${KERNEL_INSTALLER}" --burn-cap 999
+- The kernel, that is ran by the rollup
+- The front, that can be uploaded anywhere
+- The integration with the sequencer prototype
 
-Warning:
+## The Dungeon-kernel
 
-                 This is NOT the Tezos Mainnet.
+For the features we have:
 
-           Do NOT use your fundraiser keys on this network.
+- Light multi-players (2 players) interact with each other in real-time.
+- Light connection with wallet (hardcode the secret keys).
+- Exchange assets: where the player can drop, pick up, sell and buy item.
 
-Node is bootstrapped.
-Estimated gas: 554.588 units (will add 0 for safety)
-Estimated storage: no bytes added
-Estimated gas: 1848.229 units (will add 100 for safety)
-Estimated storage: 6552 bytes added (will add 20 for safety)
-Operation successfully injected in the node.
-Operation hash is 'opUjZc7tj4HPAs1eNe56zi4GRaTVk6fz7A9zNzQNjuo769fU49Q'
-Waiting for the operation to be included...
-Operation found in block: BKk6DuBb6Gx69tPZt41VJ8AHTP6UogDNoWW5dza6wuUjT7cDj4T (pass: 3, offset: 0)
-This sequence of operations was run:
-  Manager signed operations:
-    From: tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9
-    Fee to the baker: ꜩ0.000314
-    Expected counter: 1874
-    Gas limit: 555
-    Storage limit: 0 bytes
-    Balance updates:
-      tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 ... -ꜩ0.000314
-      payload fees(the block proposer) ....... +ꜩ0.000314
-    Revelation of manager public key:
-      Contract: tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9
-      Key: edpkuSuiTwpLGyLC7MESCEpsr5WgtWN1CWKvkw7HUP5jp1cffxNhMW
-      This revelation was successfully applied
-      Consumed gas: 554.488
-  Manager signed operations:
-    From: tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9
-    Fee to the baker: ꜩ0.011935
-    Expected counter: 1875
-    Gas limit: 1949
-    Storage limit: 6572 bytes
-    Balance updates:
-      tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 ... -ꜩ0.011935
-      payload fees(the block proposer) ....... +ꜩ0.011935
-    Smart rollup origination:
-      Kind: wasm_2_0_0
-      Parameter type: bytes
-      Kernel Blake2B hash: 'f24c9f14a0ab4f414716c63abbdf02245090b3acc5fa177ede9d53bef6aaff3e'
-      This smart rollup origination was successfully applied
-      Consumed gas: 1848.269
-      Storage size: 6552 bytes
-      Address: sr1ShQXXwmpTg5DLmh1U4yQdfrdzVCW6i8UE
-      Genesis commitment hash: src13LXXm9pNJ4FUAE3Kma2smam71TK85nDKdTZKcE9n8qXsz4AcqM
-      Balance updates:
-        tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 ... -ꜩ1.638
-        storage fees ........................... +ꜩ1.638
+![](../10_dungeon/pics/sequencer%20workflow.png)
 
-The operation has only been included 0 blocks ago.
-We recommend to wait more.
-Use command
-  octez-client wait for opUjZc7tj4HPAs1eNe56zi4GRaTVk6fz7A9zNzQNjuo769fU49Q to be included --confirmations 1 --branch BLwi4dz4WscQU1zeiS251nicVigaCHWta8rzEaNhaD2xLn8Wns1
-and/or an external block explorer.
+We have 5 main components:
 
-```
+- The DApp
+- The Dungeon-kernel
+- The Layer 1 - Tezos node
+- The sequencer prototype
+- The Rollup node
 
-## Smart rollup node
+The Dungeon-kernel is known by both the Sequencer and the Rollup node.
+The DApp will send a sequence of operations to the sequencer. The sequencer will then use it own runtime mechanism to compute the optimist durable state. The DApp will then fetch that state from the sequencer.
 
-```
-~/tezos/octez-smart-rollup-node-alpha init operator config for sr1ShQXXwmpTg5DLmh1U4yQdfrdzVCW6i8UE with operators tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 --data-dir rollup
-```
+The sequencer will collect the sequence of operations in a batch, hash it and then send this hash to the Layer 1 (Tezos node).
 
-Smart rollup node configuration is written in `rollup/config.json`. The content of `rollup/config.json`:
+Tezos node will receive this hash and send it to the rollup node. Rollup node will reconstruct the hash, process and verify the sequence of operations of this hash. If everything went well it will commit this hash.
 
-```
-{ "smart-rollup-address": "sr1ShQXXwmpTg5DLmh1U4yQdfrdzVCW6i8UE",
-  "smart-rollup-node-operator":
-    { "publish": "tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9",
-      "add_messages": "tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9",
-      "cement": "tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9",
-      "refute": "tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9" },
-  "fee-parameters": {}, "mode": "operator" }
-```
+Thanks to the sequencer, each action of the player is fast, the Dapp can fetch the new state without having to wait for the operations to be committed in the rollup node. We don't have to wait for 2 blocks for the rollup node to process and verify.
 
-## Send external message
+## Front-end
 
-```
-~/tezos/octez-client -p ProtoALphaAL send smart rollup message "hex:[ \"5b0a202020205b0a20202020202020207b0a2020202020202020202020202265787465726e616c223a20223031220a20202020202020207d2c0a20202020202020207b0a2020202020202020202020202265787465726e616c223a20223031220a20202020202020207d0a202020205d0a5d\" ]" from tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9
-```
+Display all the actors: player, map, floor, wall, item, inventory, gold and marketplace.
 
-where hex output of:
+Add actions of the player: move, drop, pick up, buy, sell and switch to different player account.
 
-```
-xxd -ps -c 0 kernel/inputs.json
-```
+Whenever player picks up the item, this item will be disappeared from the map and display in his inventory.
 
-Output
+Whenever the player drops an item, this item will be disappeared from his inventory and appear on the map at the position that he dropped.
 
-```
-Warning:
+The player able to choose which item to drop that is available in his inventory.
 
-                 This is NOT the Tezos Mainnet.
+Each player has certain amount of gold, this will be used for buying and selling the item.
 
-           Do NOT use your fundraiser keys on this network.
+Whenever the player choose to sell the item in his inventory, the item will be disappeared from his inventory and show in the marketplace with the option to sell.
 
-Node is bootstrapped.
-Estimated gas: 174.579 units (will add 100 for safety)
-Estimated storage: no bytes added
-Operation successfully injected in the node.
-Operation hash is 'ooK6ecJh3MBvtuzfMzhrNr45NWmVXZyiQ2ihtSvYViCMbk7snJr'
-Waiting for the operation to be included...
-Operation found in block: BKvVgdMkTkeGQ7VysrtRNZFyWK93Fs52WJaZuGSuNLZqqmgPvK8 (pass: 3, offset: 0)
-This sequence of operations was run:
-  Manager signed operations:
-    From: tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9
-    Fee to the baker: ꜩ0.000375
-    Expected counter: 1876
-    Gas limit: 275
-    Storage limit: 0 bytes
-    Balance updates:
-      tz1XyoKMeg2CMTw52oQBQhBCszVfdEBsjph9 ... -ꜩ0.000375
-      payload fees(the block proposer) ....... +ꜩ0.000375
-    Smart rollup messages submission:
-      This smart rollup messages submission was successfully applied
-      Consumed gas: 174.512
+When another player wants to buy the item that is listed in the marketplace. When he bought it, the item will be disappeared in the marketplace, display in his inventory and the amount of gold will be decreased by the value that the item is selled. The gold of the seller will increased by the amount that this item sells as well.
 
-The operation has only been included 0 blocks ago.
-We recommend to wait more.
-Use command
-  octez-client wait for ooK6ecJh3MBvtuzfMzhrNr45NWmVXZyiQ2ihtSvYViCMbk7snJr to be included --confirmations 1 --branch BMc9ETqkaFufUkgw1qvMVoYJav5r1SQNARjaEa91XDtcvJaM2cG
-and/or an external block explorer.
-```
+For the front-end, there is an interval that fetches the state of the sequencer every 0.5s. We have to fetch the state in an interval because the sequencer/node does not implement a push strategy (sending the state to the client when there is a new one).
 
-Checking the operation has been included in a block:
+The deserilisation of messges/state from the DApp is complicated, because the data are encoded in a binary format.
 
-```
- ~/tezos/octez-client wait for ooK6ecJh3MBvtuzfMzhrNr45NWmVXZyiQ2ihtSvYViCMbk7snJr to be included --confirmations 1 --branch BMc9ETqkaFufUkgw1qvMVoYJav5r1SQNARjaEa91XDtcvJaM2cG
-Warning:
-
-                 This is NOT the Tezos Mainnet.
-
-           Do NOT use your fundraiser keys on this network.
-
-Operation found in block: BKvVgdMkTkeGQ7VysrtRNZFyWK93Fs52WJaZuGSuNLZqqmgPvK8 (pass: 3, offset: 0)
-Operation received 1 confirmations as of block: BLa1oDahg3qunzpJa3RxRTJ734d3aCL1X6fqjczqjsot8sxdgC4
-```
-
-## Debug kernel
-
-Run with two examples:
-
-- The `inputs.json`: let x move up two times.
-
-```
-[
-    [
-        {
-            "external": "01"
-        },
-        {
-            "external": "01"
-        }
-    ]
-]
-```
-
-```
-octez-smart-rollup-wasm-debugger rollup/kernel.wasm --inputs kernel/inputs.json
-```
-
-Steps
-
-```
-tarting debugger REPL. Enter command 'help' for usage.
-> show status
-Status: Waiting for input
-Internal_status: Collect
-> load inputs
-Loaded 2 inputs at level 0
-> show status
-Status: Evaluating
-Internal_status: Snapshot
-> show inbox
-Inbox has 5 messages:
-{ raw_level: 0;
-  counter: 0
-  payload: Start_of_level }
-{ raw_level: 0;
-  counter: 1
-  payload: Info_per_level {predecessor_timestamp = 1970-01-01T00:00:00-00:00; predecessor = BKiHLREqU3JkXfzEDYAkmmfX48gBDtYhMrpA98s7Aq4SzbUAB6M} }
-{ raw_level: 0;
-  counter: 2
-  payload: 01 }
-{ raw_level: 0;
-  counter: 3
-  payload: 01 }
-{ raw_level: 0;
-  counter: 4
-  payload: End_of_level }
-> step kernel_run
-Hello worldEvaluation took 11000000000 ticks so far
-Status: Waiting for input
-Internal_status: Collect
-> show key /state/player/x_pos
-00000010
-> show key /state/player/x_pos
-00000010
-```
-
-- The `inputs.json`: let x move up one times, y move down 1 times
-
-```
-[
-    [
-        {
-            "external": "01"
-        },
-        {
-            "external": "02"
-        }
-    ]
-]
-```
-
-Steps:
-
-```
-> show status
-Status: Waiting for input
-Internal_status: Collect
-> load inputs
-Loaded 2 inputs at level 0
-> show status
-Status: Evaluating
-Internal_status: Snapshot
-> show inbox
-Inbox has 5 messages:
-{ raw_level: 0;
-  counter: 0
-  payload: Start_of_level }
-{ raw_level: 0;
-  counter: 1
-  payload: Info_per_level {predecessor_timestamp = 1970-01-01T00:00:00-00:00; predecessor = BKiHLREqU3JkXfzEDYAkmmfX48gBDtYhMrpA98s7Aq4SzbUAB6M} }
-{ raw_level: 0;
-  counter: 2
-  payload: 01 }
-{ raw_level: 0;
-  counter: 3
-  payload: 02 }
-{ raw_level: 0;
-  counter: 4
-  payload: End_of_level }
-> step kernel_run
-Hello worldEvaluation took 11000000000 ticks so far
-Status: Waiting for input
-Internal_status: Collect
-> show key /state/player/x_pos
-00000010
-> show key /state/player/y_pos
-00000011
-> show key /state/player/x_pos
-```
-
-# Sequencer
+## Integration with the sequencer prototype
 
 To use the sequencer you have to edit the sequencer-http/Cargo.toml, and add a dependency to your kernel:
 
@@ -272,10 +66,6 @@ To use the sequencer you have to edit the sequencer-http/Cargo.toml, and add a d
 # sequencer-http/Cargo.toml
 kernel = {path = "../../10_dungeon/kernel"}
 ```
-
-> Because you specify your custom kernel as a dependency of the sequencer
-> You don't have to compile your kernel on new changes
-> You just have to build or to run the sequencer
 
 Then you can compile the sequencer-http crate and resolve any issues:
 
@@ -288,7 +78,7 @@ impl Kernel for MyKernel {
 }
 ```
 
-> You need to have a tezos node running
+> You need to have a tezos node running.
 > You can provide any node
 
 ```rust
@@ -332,29 +122,6 @@ curl "http://127.0.0.1:8080/state/subkeys?path=/state/player"
 > ["x_pos", "y_pos"]
 ```
 
-## Restart from a fresh sequencer
+## Dungeon POC on Ghostnet
 
-The sequencer is saving its state into the filesystem under the folder `/tmp/sequencer-storage`
-If you want to restart a sequencer from a fresh state you just have to delete this folder
-Otherwise the sequencer will use this old state as the current one
-
-```bash
-rm -rf /tmp/sequencer-storage
-```
-
-# Starting the application
-
-To start the application you have to run the sequencer (see above) and then run the front-end application as follow:
-
-```bash
-cd app
-yarn install
-```
-
-And then you can start it with yarn
-
-```
-yarn start
-```
-
-An new tab browser should open on "http://localhost:3000/" (or any other port)
+https://ghostnet.dungeon.marigold.dev
