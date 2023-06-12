@@ -51,16 +51,16 @@ cp ../target/wasm32-unknown-unknown/release/tzwitter_kernel.wasm ./rollup/kernel
 KERNEL_INSTALLER=$(cat rollup/installer.hex)
 
 # Originate the kernel 
-SOR_ADDR=$(octez-client originate smart rollup from $account_alias \
+octez-client originate smart rollup "my-rollup" from $account_alias \
   of kind wasm_2_0_0 \
   of type bytes \
   with kernel "${KERNEL_INSTALLER}" \
-  --burn-cap 999 | grep "Address:" | awk '{print $2}')
+  --burn-cap 999 --force > /dev/null
 
 # # Setting up the rollup data directory
-octez-smart-rollup-node-alpha init operator config for "${SOR_ADDR}" with operators "$account_alias" --data-dir rollup
+octez-smart-rollup-node-alpha init operator config for my-rollup with operators "$account_alias" --data-dir rollup --log-kernel-debug
 
 # # Print the function to run it
 echo Rollup Address: $SOR_ADDR
 echo Command to run to start your rollup:
-echo "octez-smart-rollup-node-alpha run operator for $SOR_ADDR with operators ${account_alias} --data-dir rollup"
+echo "octez-smart-rollup-node-alpha run operator for my-rollup with operators ${account_alias} --data-dir rollup"
