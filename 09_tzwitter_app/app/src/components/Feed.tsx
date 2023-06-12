@@ -16,6 +16,10 @@ const Feed = ({
   onTransfer,
   onCollect,
 }: FeedProperty) => {
+  tweets.sort((tweetA, tweetB) => {
+    return tweetB.id - tweetA.id;
+  });
+
   return (
     <div>
       {tweets.map((tweet) => {
