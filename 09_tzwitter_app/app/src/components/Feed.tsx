@@ -1,5 +1,6 @@
 import { Tweet } from '../lib/tweet';
 import TweetComponent from './TweetComponent';
+import './Feed.css';
 
 interface FeedProperty {
   tweets: Array<Tweet>;
@@ -21,7 +22,7 @@ const Feed = ({
   });
 
   return (
-    <div>
+    <div id="feed">
       {tweets.map((tweet) => {
         return (
           <TweetComponent
