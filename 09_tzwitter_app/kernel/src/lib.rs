@@ -26,10 +26,8 @@ use stages::{
 fn step<R: Runtime>(host: &mut R, message: Message, level: u32) -> Result<()> {
     let public_key = message.public_key();
     let public_key_hash = PublicKeyHash::from(public_key);
-    debug_msg!(host, "Message is deserialized\n");
 
     let inner = verify_signature(message)?;
-    debug_msg!(host, "Signature is correct\n");
 
     // Verify the nonce
     let account = read_account(host, public_key_hash)?;
@@ -59,34 +57,58 @@ fn step<R: Runtime>(host: &mut R, message: Message, level: u32) -> Result<()> {
 ///
 /// TODO: it can count ticks and reboot the kernel between two inbox message
 fn execute<R: Runtime>(host: &mut R) -> Result<()> {
+    debug_msg!(host, "\n");
     let message = read_input(host);
     match message {
-        Err(ReadInputError::EndOfInbox) => Ok(()),
-        Err(ReadInputError::Runtime(err)) => Err(Error::Runtime(err)),
-        Err(_) => execute(host),
+        Err(ReadInputError::EndOfInbox) => {
+            debug_msg!(host, "end of inbox\n");
+            Ok(())
+        }
+        Err(ReadInputError::Runtime(err)) => {
+            debug_msg!(host, "runtime error when reading messages\n");
+            Err(Error::Runtime(err))
+        }
+        Err(err) => {
+            debug_msg!(host, "message ignored, cause: {:?}\n", err);
+            execute(host)
+        }
         Ok((message, level)) => {
+            debug_msg!(host, "processing message\n");
+            debug_msg!(host, "{:?}\n", &message);
             // If the message is processed we can extract the hash of the message
             let hash = message.hash();
             let result = step(host, message, level);
+            debug_msg!(host, "message processed\n");
 
             let receipt = Receipt::new(hash, &result);
             let _ = store_receipt(host, &receipt)?;
+            debug_msg!(host, "receipt saved\n");
 
             match result {
-                Err(Error::Runtime(err)) => Err(Error::Runtime(err)),
-                Err(_) => execute(host),
-                Ok(()) => execute(host),
+                Err(Error::Runtime(err)) => {
+                    debug_msg!(host, "runtime error in step, cause: {:?}\n", err);
+                    Err(Error::Runtime(err))
+                }
+                Err(err) => {
+                    debug_msg!(host, "error in step, cause: {:?}\n", err);
+                    execute(host)
+                }
+                Ok(()) => {
+                    debug_msg!(host, "message processed with success\n");
+                    execute(host)
+                }
             }
         }
     }
 }
 
 pub fn entry<R: Runtime>(host: &mut R) {
-    debug_msg!(host, "Hello Kernel\n");
+    debug_msg!(host, "--------- New level ----------");
     match execute(host) {
         Ok(_) => {}
-        Err(err) => debug_msg!(host, "{}", &err.to_string()),
+        Err(err) => debug_msg!(host, "runtime error somewhere: {}\n", &err.to_string()),
     }
+    debug_msg!(host, "------- End of level ---------\n\n");
 }
 
 kernel_entry!(entry);

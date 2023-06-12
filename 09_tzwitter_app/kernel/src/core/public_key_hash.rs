@@ -5,7 +5,7 @@ use crate::core::public_key::PublicKey;
 
 use crate::core::{error::Error, hash::Blake2b20};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub enum PublicKeyHash {
     Tz1(ContractTz1Hash),
 }

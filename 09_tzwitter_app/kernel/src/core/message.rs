@@ -5,19 +5,19 @@ use crate::core::public_key_hash::PublicKeyHash;
 use crate::core::signature::Signature;
 use serde::Deserialize;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct PostTweet {
     pub author: PublicKeyHash, // define a new type for public key
     pub content: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Transfer {
     pub tweet_id: u64,
     pub destination: PublicKeyHash,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub enum Content {
     PostTweet(PostTweet),
     LikeTweet(u64),
@@ -25,7 +25,7 @@ pub enum Content {
     Collect(u64),
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Inner {
     nonce: Nonce,
     pub content: Content,
@@ -38,7 +38,7 @@ impl Inner {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Message {
     pkey: PublicKey,
     signature: Signature,

@@ -4,7 +4,7 @@ use crate::core::public_key::PublicKey;
 use serde::Deserialize;
 use tezos_crypto_rs::hash::Ed25519Signature;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub enum Signature {
     Ed25519(Ed25519Signature),
 }

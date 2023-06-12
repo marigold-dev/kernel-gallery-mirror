@@ -35,6 +35,12 @@ pub fn read_input<R: Runtime>(host: &mut R) -> std::result::Result<(Message, u32
         None => Err(ReadInputError::EndOfInbox),
         Some(message) => {
             let data = message.as_ref();
+
+            let str = data
+                .iter()
+                .fold(String::new(), |acc, byte| format!("{}{:02X?}", acc, byte));
+            debug_msg!(host, "{}\n", str);
+
             match data {
                 [0x01, MAGIC_BYTE, ..] => {
                     let bytes = data.iter().skip(2).copied().collect();
@@ -72,7 +78,10 @@ pub fn verify_nonce(inner: Inner, nonce: &Nonce) -> Result<Content> {
         let Inner { content, .. } = inner;
         Ok(content)
     } else {
-        Err(Error::InvalidNonce)
+        Err(Error::InvalidNonce {
+            current_nonce: Nonce(nonce.0),
+            given_nonce: Nonce(inner_nonce.0),
+        })
     }
 }
 
@@ -95,11 +104,15 @@ pub fn create_tweet<R: Runtime>(
 pub fn like_tweet<R: Runtime>(host: &mut R, account: &Account, tweet_id: &u64) -> Result<()> {
     let already_liked = is_liked(host, &account.public_key_hash, tweet_id)?;
     match already_liked {
-        true => Err(Error::TweetAlreadyLiked),
+        true => Err(Error::TweetAlreadyLiked {
+            tweet_id: *tweet_id,
+        }),
         false => {
             let tweet = read_tweet(host, tweet_id)?;
             match tweet {
-                None => Err(Error::TweetNotFound),
+                None => Err(Error::TweetNotFound {
+                    tweet_id: *tweet_id,
+                }),
                 Some(tweet) => {
                     let tweet = tweet.like();
                     store_tweet(host, tweet_id, &tweet)?;
@@ -140,7 +153,9 @@ pub fn withdraw_tweet<R: Runtime>(
 
     let tweet = read_tweet(host, tweet_id)
         .map_err(Error::from)?
-        .ok_or(Error::TweetNotFound)?;
+        .ok_or(Error::TweetNotFound {
+            tweet_id: *tweet_id,
+        })?;
 
     let owner = {
         let contract = Contract::from_b58check(&account.public_key_hash.to_string())

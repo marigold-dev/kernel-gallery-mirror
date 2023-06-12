@@ -327,7 +327,10 @@ pub fn is_owner<R: Runtime>(
 
     match is_present {
         true => Ok(()),
-        false => Err(Error::NotOwner),
+        false => Err(Error::NotOwner {
+            tweet_id: *tweet_id,
+            address: public_key_hash.clone(),
+        }),
     }
 }
 
@@ -359,7 +362,9 @@ pub fn is_not_collected<R: Runtime>(host: &mut R, tweet_id: &u64) -> Result<()> 
     let is_present = exists(host, &tweet_collected_block_path)?;
 
     match is_present {
-        true => Err(Error::TweetAlreadyCollected),
+        true => Err(Error::TweetAlreadyCollected {
+            tweet_id: *tweet_id,
+        }),
         false => Ok(()),
     }
 }
@@ -371,7 +376,7 @@ pub fn set_collected_block<R: Runtime>(
     previous_block: &u32,
 ) -> Result<()> {
     let tweet_collected_block_path = tweet_collected_block_path(tweet_id)?;
-    let _ = store_u32(host, &tweet_collected_block_path, &previous_block)?;
+    let _ = store_u32(host, &tweet_collected_block_path, previous_block)?;
     Ok(())
 }
 

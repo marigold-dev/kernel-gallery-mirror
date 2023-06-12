@@ -1,3 +1,5 @@
+use super::{nonce::Nonce, public_key_hash::PublicKeyHash};
+
 /// Rperesents the error of the read_input functions
 #[derive(Debug)]
 pub enum ReadInputError {
@@ -21,13 +23,25 @@ pub enum Error {
     Runtime(tezos_smart_rollup::host::RuntimeError),
     Ed25519Compact(ed25519_compact::Error),
     InvalidSignature,
-    InvalidNonce,
+    InvalidNonce {
+        current_nonce: Nonce,
+        given_nonce: Nonce,
+    },
     PathError(tezos_smart_rollup::storage::path::PathError),
     StateDeserializarion,
-    TweetNotFound,
-    TweetAlreadyLiked,
-    NotOwner,
-    TweetAlreadyCollected,
+    TweetNotFound {
+        tweet_id: u64,
+    },
+    TweetAlreadyLiked {
+        tweet_id: u64,
+    },
+    NotOwner {
+        tweet_id: u64,
+        address: PublicKeyHash,
+    },
+    TweetAlreadyCollected {
+        tweet_id: u64,
+    },
     FromBase58CheckError,
     BigIntError,
     BinError(tezos_data_encoding::enc::BinError),
@@ -36,24 +50,42 @@ pub enum Error {
 
 impl ToString for Error {
     fn to_string(&self) -> String {
-        let err = match self {
-            Error::FromUtf8(_) => "Cannot convert bytes to string",
-            Error::Runtime(_) => "Runtime error, caused by host function",
-            Error::Ed25519Compact(_) => "Cannot deserialize Ed25519",
-            Error::InvalidSignature => "Invalid signature",
-            Error::InvalidNonce => "Invalid nonce",
-            Error::PathError(_) => "Invalid path",
-            Error::StateDeserializarion => "State deserialization",
-            Error::TweetNotFound => "Tweet not found",
-            Error::TweetAlreadyLiked => "The tweet has already been liked by this account",
-            Error::NotOwner => "Not the owner of the tweet",
-            Error::TweetAlreadyCollected => "The tweet has already been collected",
-            Error::FromBase58CheckError => "Cannot convert a string to a contract address",
-            Error::BigIntError => "Cannot deserialize big int",
-            Error::BinError(_) => "Cannot serialize michelson to binary",
-            Error::EntrypointError(_) => "Not a correct entrypoint",
-        };
-        err.to_string()
+        match self {
+            Error::FromUtf8(_) => "Cannot convert bytes to string".into(),
+            Error::Runtime(_) => "Runtime error, caused by host function".into(),
+            Error::Ed25519Compact(_) => "Cannot deserialize Ed25519".into(),
+            Error::InvalidSignature => "Invalid signature".into(),
+            Error::InvalidNonce {
+                current_nonce,
+                given_nonce,
+            } => format!(
+                "Invalid nonce, current: {}, given: {}",
+                current_nonce.0, given_nonce.0
+            ),
+            Error::PathError(_) => "Invalid path".into(),
+            Error::StateDeserializarion => "State deserialization".into(),
+            Error::TweetNotFound { tweet_id } => format!("Tweet {} not found", tweet_id),
+            Error::TweetAlreadyLiked { tweet_id } => {
+                format!(
+                    "The tweet {} has already been liked by this account",
+                    tweet_id
+                )
+            }
+            Error::NotOwner { tweet_id, address } => {
+                format!(
+                    "{} is not the owner of the tweet {}",
+                    address.to_string(),
+                    tweet_id
+                )
+            }
+            Error::TweetAlreadyCollected { tweet_id } => {
+                format!("The tweet {} has already been collected", tweet_id)
+            }
+            Error::FromBase58CheckError => "Cannot convert a string to a contract address".into(),
+            Error::BigIntError => "Cannot deserialize big int".into(),
+            Error::BinError(_) => "Cannot serialize michelson to binary".into(),
+            Error::EntrypointError(_) => "Not a correct entrypoint".into(),
+        }
     }
 }
 

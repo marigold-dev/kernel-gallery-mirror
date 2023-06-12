@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, PartialEq, Eq, Default)]
+#[derive(Deserialize, Serialize, PartialEq, Eq, Default, Debug)]
 pub struct Nonce(pub u64);
 
 impl Nonce {

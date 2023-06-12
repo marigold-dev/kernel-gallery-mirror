@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use tezos_crypto_rs::hash::PublicKeyEd25519;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub enum PublicKey {
     Ed25519(PublicKeyEd25519),
 }
