@@ -32,7 +32,7 @@ impl Player {
                 inventory: self.inventory.clone(),
                 gold: self.gold,
             })
-            .unwrap_or(self.clone())
+            .unwrap_or_else(|| self.clone())
     }
 
     pub fn move_down(&self) -> Player {
@@ -54,7 +54,7 @@ impl Player {
                 inventory: self.inventory.clone(),
                 gold: self.gold,
             })
-            .unwrap_or(self.clone())
+            .unwrap_or_else(|| self.clone())
     }
 
     pub fn move_right(&self) -> Player {
@@ -99,10 +99,20 @@ impl Player {
         }
     }
 
-    pub fn remove_gold(self, amount: usize) -> Player {
+    /*pub fn remove_gold(self, amount: usize) -> Player {
         Player {
             gold: self.gold - amount,
             ..self
+        }
+    }*/
+    pub fn remove_gold(self, amount: usize) -> Player {
+        let price = self.gold - amount;
+        match price.checked_neg() {
+            None => self,
+            Some(price) => Player {
+                gold: price,
+                ..self
+            },
         }
     }
 

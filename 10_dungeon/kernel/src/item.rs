@@ -10,8 +10,4 @@ impl Item {
     pub fn new_sword() -> Self {
         Self::Sword
     }
-
-    pub fn new_potion() -> Self {
-        Self::Potion
-    }
 }
