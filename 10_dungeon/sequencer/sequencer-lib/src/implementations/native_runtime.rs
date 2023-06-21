@@ -113,6 +113,10 @@ where
         }
     }
 
+    fn store_read_all(&self, _path: &impl Path) -> Result<Vec<u8>, RuntimeError> {
+        todo!()
+    }
+
     fn store_read_slice<T: Path>(
         &self,
         path: &T,
@@ -270,11 +274,15 @@ where
         Ok(())
     }
 
-    fn reveal_metadata(
+    fn reveal_metadata(&self) -> tezos_smart_rollup_host::metadata::RollupMetadata {
+        todo!()
+    }
+
+    /*fn reveal_metadata(
         &self,
     ) -> Result<tezos_smart_rollup_host::metadata::RollupMetadata, RuntimeError> {
         todo!()
-    }
+    }*/
 
     fn last_run_aborted(&self) -> Result<bool, RuntimeError> {
         todo!()

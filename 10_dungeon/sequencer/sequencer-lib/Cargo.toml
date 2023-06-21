@@ -9,8 +9,10 @@ crate-type = ["lib"]
 [dependencies]
 tokio = "1.26.0"
 async-trait = "0.1.68"
-tezos-smart-rollup-core = { git = "https://gitlab.com/tezos/tezos" } 
-tezos-smart-rollup-host = { git = "https://gitlab.com/tezos/tezos" } 
+#tezos-smart-rollup-core = { git = "https://gitlab.com/tezos/tezos" } 
+#tezos-smart-rollup-host = { git = "https://gitlab.com/tezos/tezos" } 
+tezos-smart-rollup-core = "0.2.0"
+tezos-smart-rollup-host = "0.2.0"
 serde = "1.0.158"
 hex = "0.4.3"
 sled="0.34"
