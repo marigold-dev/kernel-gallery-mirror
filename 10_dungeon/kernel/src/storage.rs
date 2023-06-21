@@ -1,3 +1,5 @@
+use crate::Runtime;
+use crate::RuntimeError;
 use std::collections::HashMap;
 
 use crate::item::Item;
@@ -6,8 +8,12 @@ use crate::market_place::MarketPlace;
 use crate::player::{Player, MAX_ITEMS};
 
 use crate::state::State;
-use tezos_smart_rollup_host::path::{concat, OwnedPath, RefPath};
-use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
+//use tezos_smart_rollup_host::path::{concat, OwnedPath, RefPath};
+//use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
+
+use tezos_smart_rollup::storage::path::concat;
+use tezos_smart_rollup::storage::path::OwnedPath;
+use tezos_smart_rollup::storage::path::RefPath;
 
 const PLAYER_PATH: RefPath = RefPath::assert_from(b"/players");
 const MAP_PATH: RefPath = RefPath::assert_from(b"/state/map");

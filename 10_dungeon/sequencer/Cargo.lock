@@ -1091,9 +1091,7 @@ dependencies = [
  "getrandom",
  "rand 0.8.5",
  "serde",
- "tezos-smart-rollup-core",
- "tezos-smart-rollup-entrypoint",
- "tezos-smart-rollup-host",
+ "tezos-smart-rollup",
 ]
 
 [[package]]
@@ -2002,6 +2000,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "tezos-smart-rollup"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f497c89d8a143f20004142f9a0fa9232598ceaf438581b82a029cbc709decf9"
+dependencies = [
+ "tezos-smart-rollup-core",
+ "tezos-smart-rollup-debug",
+ "tezos-smart-rollup-encoding",
+ "tezos-smart-rollup-entrypoint",
+ "tezos-smart-rollup-host",
+ "tezos-smart-rollup-storage",
+ "tezos_crypto_rs",
+ "tezos_data_encoding",
+]
+
+[[package]]
 name = "tezos-smart-rollup-core"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2015,6 +2029,25 @@ checksum = "0108861f0710f4b10917917cfdc92fa320e991790fde5dd0a1851954bb01cec0"
 dependencies = [
  "tezos-smart-rollup-core",
  "tezos-smart-rollup-host",
+]
+
+[[package]]
+name = "tezos-smart-rollup-encoding"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a23e2fc8261bb77a0bd0dec5350b0688dc4e45f6a2ad5227f24b8d17dd589cf"
+dependencies = [
+ "hex",
+ "nom",
+ "num-bigint",
+ "num-traits",
+ "tezos-smart-rollup-core",
+ "tezos-smart-rollup-host",
+ "tezos_crypto_rs",
+ "tezos_data_encoding",
+ "tezos_data_encoding_derive",
+ "thiserror",
+ "time",
 ]
 
 [[package]]
@@ -2049,6 +2082,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b878d9d2b185f01656efb5a313aa99abb334025adc146b09f21390fa523c1b30"
 dependencies = [
  "tezos-smart-rollup-core",
+]
+
+[[package]]
+name = "tezos-smart-rollup-storage"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1da8c5742aaad5aa439d25db85045f350b130b2309c8b3de762a221aba13af1"
+dependencies = [
+ "tezos-smart-rollup-core",
+ "tezos-smart-rollup-debug",
+ "tezos-smart-rollup-encoding",
+ "tezos-smart-rollup-host",
+ "thiserror",
 ]
 
 [[package]]

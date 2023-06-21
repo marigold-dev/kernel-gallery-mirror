@@ -10,8 +10,12 @@ use player::Player;
 use player_actions::PlayerMsg;
 use state::State;
 use storage::{load_player, load_state, update_player, update_state};
-use tezos_smart_rollup_entrypoint::kernel_entry;
-use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
+//use tezos_smart_rollup_entrypoint::kernel_entry;
+//use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
+
+use tezos_smart_rollup::host::RuntimeError;
+use tezos_smart_rollup::kernel_entry; // this from entrypoint
+use tezos_smart_rollup::prelude::Runtime;
 
 // Entry
 pub fn entry<R: Runtime>(rt: &mut R) {
