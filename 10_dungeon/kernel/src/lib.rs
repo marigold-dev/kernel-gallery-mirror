@@ -10,8 +10,6 @@ use player::Player;
 use player_actions::PlayerMsg;
 use state::State;
 use storage::{load_player, load_state, update_player, update_state};
-//use tezos_smart_rollup_entrypoint::kernel_entry;
-//use tezos_smart_rollup_host::runtime::{Runtime, RuntimeError};
 
 use tezos_smart_rollup::host::RuntimeError;
 use tezos_smart_rollup::kernel_entry; // this from entrypoint
@@ -27,45 +25,38 @@ pub fn entry<R: Runtime>(rt: &mut R) {
         match input {
             Ok(Some(message)) => {
                 let player_msg = PlayerMsg::try_from(message.as_ref().to_vec());
-                match player_msg {
-                    Ok(player_msg) => {
-                        rt.write_debug("Message is deserialized");
-                        let PlayerMsg {
-                            public_key: player_address,
-                            action: player_action,
-                        } = player_msg;
+                if let Ok(player_msg) = player_msg {
+                    rt.write_debug("Message is deserialized");
+                    let PlayerMsg {
+                        public_key: player_address,
+                        action: player_action,
+                    } = player_msg;
 
-                        let other_placer: Option<Player> = match &player_action {
-                            player_actions::PlayerAction::Buy(player_address, _) => {
-                                load_player(rt, player_address).ok()
-                            }
-                            _ => None,
-                        };
+                    let other_placer: Option<Player> = match &player_action {
+                        player_actions::PlayerAction::Buy(player_address, _) => {
+                            load_player(rt, player_address).ok()
+                        }
+                        _ => None,
+                    };
 
-                        let state: Result<State, RuntimeError> = load_state(rt, &player_address);
-                        match state {
-                            Ok(state) => {
-                                rt.write_debug("Calling transtion");
-                                let (next_state, player) = state.transition(
-                                    other_placer,
-                                    player_action.clone(),
-                                    &player_address,
-                                );
-                                let _ = update_state(rt, &player_address, &next_state);
-                                match player {
-                                    None => {}
-                                    Some(player) => match &player_action {
-                                        player_actions::PlayerAction::Buy(address, _) => {
-                                            let _ = update_player(rt, &address, &player);
-                                        }
-                                        _ => {}
-                                    },
+                    let state: Result<State, RuntimeError> = load_state(rt, &player_address);
+                    if let Ok(state) = state {
+                        rt.write_debug("Calling transtion");
+                        let (next_state, player) =
+                            state.transition(other_placer, player_action.clone(), &player_address);
+                        let _ = update_state(rt, &player_address, &next_state);
+                        match player {
+                            None => {}
+                            Some(player) => {
+                                if let player_actions::PlayerAction::Buy(address, _) =
+                                    &player_action
+                                {
+                                    let _ = update_player(rt, address, &player);
                                 }
                             }
-                            _ => {}
                         }
                     }
-                    _ => {}
+                    //here
                 }
             }
             _ => break,
