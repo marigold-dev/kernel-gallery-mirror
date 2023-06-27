@@ -1,0 +1,1 @@
+Init container that imports a smart rollup kernel in a persistent k8s volume.
