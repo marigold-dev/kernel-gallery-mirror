@@ -27,6 +27,7 @@ jobs:
           set -x
           sed -i 's|dungeon-sequencer.gcp.marigold.dev|dungeon-rollup-test1.gcp.marigold.dev|g' 10_dungeon/sequencer/sequencer-http/src/main.rs
           sed -i 's|127.0.0.1|0.0.0.0|g' 10_dungeon/sequencer/sequencer-http/src/main.rs
+          sed -i 's|ghostnet|mainnet|g' 10_dungeon/sequencer/sequencer-http/src/main.rs
           cat 10_dungeon/sequencer/sequencer-http/src/main.rs
 
       - name: Copy Dockerfile and scripts
@@ -56,5 +57,6 @@ jobs:
           push: ${{ github.ref == 'refs/heads/dungeon-game' }}
           tags: |
             ghcr.io/marigold-dev/dungeon-sequencer:latest
+            ghcr.io/marigold-dev/dungeon-sequencer:mainnet
             ghcr.io/marigold-dev/dungeon-sequencer:${{ github.sha }}
             ghcr.io/marigold-dev/dungeon-sequencer:${{ steps.tag_vars.outputs.date }}-${{ steps.tag_vars.outputs.sha_short }}
