@@ -19,9 +19,9 @@ jobs:
         id: sed
         run: |
           set -x
-          sed -i 's|http://127.0.0.1:8080|https://dungeon-sequencer-test1.gcp.marigold.dev|g' 10_dungeon/app/src/App.js
+          sed -i 's|http://127.0.0.1:8080|https://dungeon-sequencer-mainnet.gcp.marigold.dev|g' 10_dungeon/app/src/App.js
           cat 10_dungeon/app/src/App.js
-          sed -i 's|http://localhost:8080|https://dungeon-sequencer-test1.gcp.marigold.dev|g' 10_dungeon/app/src/action.js
+          sed -i 's|http://localhost:8080|https://dungeon-sequencer-mainnet.gcp.marigold.dev|g' 10_dungeon/app/src/action.js
           cat 10_dungeon/app/src/action.js
 
       - name: Set up Docker Buildx
