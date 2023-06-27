@@ -1,0 +1,1 @@
+Docker image that contains tools to: build & originate smart contracts, build and run sr kernels

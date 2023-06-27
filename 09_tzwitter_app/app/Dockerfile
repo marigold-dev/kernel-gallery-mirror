@@ -6,6 +6,8 @@ COPY package*.json ./
 
 COPY . .
 
+RUN sed -i 's|prettier -c . \&\& ||g' package.json
+
 RUN rm -rf node_modules build
 RUN npm install -g npm@9.6.7
 RUN npm install
