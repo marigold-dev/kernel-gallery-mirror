@@ -3,7 +3,7 @@ name: Tzwitter - frontend docker
 on:
   push:
     branches:
-      - "main"
+      - "infra-main"
     paths:
       - "09_tzwitter_app/app/**"
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          push: ${{ github.ref == 'refs/heads/main' }}
+          push: ${{ github.ref == 'refs/heads/infra-main' }}
           tags: |
             ghcr.io/marigold-dev/tzwitter-frontend:latest
             ghcr.io/marigold-dev/tzwitter-frontend:${{ github.sha }}

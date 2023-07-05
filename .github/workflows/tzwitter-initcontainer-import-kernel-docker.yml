@@ -3,7 +3,7 @@ name: Tzwitter - docker initcontainer-import-kernel
 on:
   push:
     branches:
-      - "main"
+      - "infra-main"
     paths:
       - "./infra_tooling/build_artifacts/09_tzwitter_app/.latest"
   workflow_dispatch:
