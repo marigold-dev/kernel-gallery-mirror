@@ -30,8 +30,9 @@ jobs:
         with:
           context: ./infra_tooling/docker/rollup-tezos-binaries/
           platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
+          # cache-from: type=gha
+          # cache-to: type=gha,mode=max
           # Only push if on main branch
           push: ${{ github.ref == 'refs/heads/infra-main' }}
           tags: |
