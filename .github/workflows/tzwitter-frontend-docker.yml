@@ -20,7 +20,7 @@ jobs:
           set -x
           sed -i '/TEZOS_RPC/d' 09_tzwitter_app/app/src/config.ts
           sed -i '/ROLLUP_RPC/d' 09_tzwitter_app/app/src/config.ts
-          echo "export const TEZOS_RPC = 'https://ghostnet.ecadinfra.com';" >> 09_tzwitter_app/app/src/config.ts
+          echo "export const TEZOS_RPC = 'https://rpc.ghostnet.teztnets.xyz';" >> 09_tzwitter_app/app/src/config.ts
           echo "export const ROLLUP_RPC = 'https://tzwitter-rollup-test1.gcp.marigold.dev';" >> 09_tzwitter_app/app/src/config.ts
           cat 09_tzwitter_app/app/src/config.ts
 
