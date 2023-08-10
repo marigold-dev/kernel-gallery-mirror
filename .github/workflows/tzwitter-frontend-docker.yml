@@ -5,7 +5,7 @@ on:
     branches:
       - "infra-main"
     paths:
-      - "09_tzwitter_app/app/**"
+      - "08_tzwitter_app/app/**"
   workflow_dispatch:
 
 jobs:
@@ -18,11 +18,11 @@ jobs:
       - name: Sed on config.ts # (yep thats bad)
         run: |
           set -x
-          sed -i '/TEZOS_RPC/d' 09_tzwitter_app/app/src/config.ts
-          sed -i '/ROLLUP_RPC/d' 09_tzwitter_app/app/src/config.ts
-          echo "export const TEZOS_RPC = 'https://rpc.ghostnet.teztnets.xyz';" >> 09_tzwitter_app/app/src/config.ts
-          echo "export const ROLLUP_RPC = 'https://tzwitter-rollup-test1.gcp.marigold.dev';" >> 09_tzwitter_app/app/src/config.ts
-          cat 09_tzwitter_app/app/src/config.ts
+          sed -i '/TEZOS_RPC/d' 08_tzwitter_app/app/src/config.ts
+          sed -i '/ROLLUP_RPC/d' 08_tzwitter_app/app/src/config.ts
+          echo "export const TEZOS_RPC = 'https://rpc.ghostnet.teztnets.xyz';" >> 08_tzwitter_app/app/src/config.ts
+          echo "export const ROLLUP_RPC = 'https://tzwitter-rollup-test1.gcp.marigold.dev';" >> 08_tzwitter_app/app/src/config.ts
+          cat 08_tzwitter_app/app/src/config.ts
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -38,7 +38,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v3
         with:
-          context: ./09_tzwitter_app/app/
+          context: ./08_tzwitter_app/app/
           platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
