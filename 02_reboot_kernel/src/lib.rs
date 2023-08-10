@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+//
+// SPDX-License-Identifier: MIT
+
 use tezos_smart_rollup::{kernel_entry, prelude::*, storage::path::OwnedPath};
 
 /// In this example, we'll begin to explore the control
@@ -24,7 +28,7 @@ use tezos_smart_rollup::{kernel_entry, prelude::*, storage::path::OwnedPath};
 /// a single call to the entry function; instead, mark
 /// it for reboot, exit, and process the remaining inputs
 /// in the next call.
-fn entry(host: &mut impl Runtime) {
+pub fn entry(host: &mut impl Runtime) {
     debug_msg!(host, "Hello from kernel!\n");
     let greeting_path: OwnedPath = "/greeting".as_bytes().to_vec().try_into().unwrap();
     let _ = Runtime::store_write(host, &greeting_path, "hello world".as_bytes(), 0);

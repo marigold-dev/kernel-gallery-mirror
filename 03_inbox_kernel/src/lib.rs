@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+// SPDX-FileCopyrightText: 2023 Nomadic Labs <contact@nomadic-labs.com>
+//
+// SPDX-License-Identifier: MIT
+
 use tezos_smart_rollup::{
     inbox::{InboxMessage, InternalInboxMessage},
     kernel_entry,
@@ -39,7 +44,7 @@ fn read_inbox_message<Expr: Michelson>(host: &mut impl Runtime) {
                 match InboxMessage::<Expr>::parse(message.as_ref()) {
                     Ok(parsed_msg) => match parsed_msg {
                         (remaining, InboxMessage::Internal(msg)) => {
-                            assert!(remaining.is_empty());
+                            debug_assert!(remaining.is_empty());
                             match msg {
                                 InternalInboxMessage::StartOfLevel => {
                                     // The "Start of level" message is pushed by the Layer 1
@@ -78,8 +83,8 @@ fn read_inbox_message<Expr: Michelson>(host: &mut impl Runtime) {
                             // For a simple practical example, see `counter-kernel`, where
                             // external messages are used to encode the state transitions
                             // of a counter.
-                            assert!(remaining.is_empty());
-                            let message = String::from_utf8_lossy(&msg);
+                            debug_assert!(remaining.is_empty());
+                            let message = String::from_utf8_lossy(msg);
                             debug_msg!(host, "External message: \"{}\"\n", message);
                         }
                     },
@@ -107,7 +112,7 @@ fn read_inbox_message<Expr: Michelson>(host: &mut impl Runtime) {
     }
 }
 
-fn entry(host: &mut impl Runtime) {
+pub fn entry(host: &mut impl Runtime) {
     // Every rollup has a Michelson type, declared at origination, which
     // represents the kind of data it can receive via internal transfer
     // messages. We won't delve into this here - for simplicity, the type

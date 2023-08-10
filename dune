@@ -1,6 +1,0 @@
-(alias
- (name runtest)
- ;; TODO: it seems like this requires
- ;; running `dune clean` before running `dune runtest`.
- ;; I wonder if there is a better way.
- (deps (source_tree .)))

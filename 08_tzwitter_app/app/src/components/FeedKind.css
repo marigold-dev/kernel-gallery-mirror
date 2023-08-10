@@ -1,0 +1,27 @@
+#feed-kind {
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgb(62, 65, 68);
+  border-right: 1px solid rgb(62, 65, 68);
+  border-left: 1px solid rgb(62, 65, 68);
+  box-sizing: border-box;
+}
+
+#feed-kind > * {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.feed-kind-selected {
+  font-weight: 600;
+}
+
+#owned {
+  border-right: 1px solid rgb(62, 65, 68);
+}

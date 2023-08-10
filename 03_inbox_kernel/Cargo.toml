@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+# SPDX-FileCopyrightText: 2023 Nomadic Labs <contact@nomadic-labs.com>
+#
+# SPDX-License-Identifier: MIT
+
 [package]
 name = "inbox-kernel"
 version = "0.1.0"
@@ -7,4 +12,4 @@ edition = "2021"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-tezos-smart-rollup = "0.1.0"
+tezos-smart-rollup = "0.2.1"

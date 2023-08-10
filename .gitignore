@@ -2,4 +2,4 @@
 target/
 _build
 preimage
-
+stripped_debug_kernel.wasm

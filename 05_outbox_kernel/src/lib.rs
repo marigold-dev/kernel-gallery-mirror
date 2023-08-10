@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+// SPDX-FileCopyrightText: 2023 Nomadic Labs <contact@nomadic-labs.com>
+//
+// SPDX-License-Identifier: MIT
+
 use tezos_crypto_rs::hash::SmartRollupHash;
 use tezos_data_encoding::enc::BinWriter;
 use tezos_smart_rollup::{
@@ -18,29 +23,19 @@ fn read_inbox_message<Expr: Michelson>(host: &mut impl Runtime, own_address: &Sm
         match host.read_input() {
             Ok(Some(message)) => {
                 // Parse the payload of the message
-                match InboxMessage::<Expr>::parse(message.as_ref()) {
-                    Ok(parsed_msg) => match parsed_msg {
-                        (remaining, InboxMessage::Internal(msg)) => {
-                            assert!(remaining.is_empty());
-                            match msg {
-                                InternalInboxMessage::Transfer(m) => {
-                                    if m.destination.hash() == own_address {
-                                        // If the message is addressed to me, push a message
-                                        // to the outbox
-                                        debug_msg!(host, "Internal message: transfer for me\n");
-                                        write_outbox_message(host, m.payload);
-                                    } else {
-                                        debug_msg!(host, "Internal message: transfer not for me\n")
-                                    }
-                                }
-                                // Ignore other internal messages
-                                _ => (),
-                            }
+                let parsed_message = InboxMessage::<Expr>::parse(message.as_ref());
+                if let Ok((remaining, InboxMessage::Internal(msg))) = parsed_message {
+                    debug_assert!(remaining.is_empty());
+                    if let InternalInboxMessage::Transfer(m) = msg {
+                        if m.destination.hash() == own_address {
+                            // If the message is addressed to me, push a message
+                            // to the outbox
+                            debug_msg!(host, "Internal message: transfer for me\n");
+                            write_outbox_message(host, m.payload);
+                        } else {
+                            debug_msg!(host, "Internal message: transfer not for me\n")
                         }
-                        // Ignore external messages
-                        _ => (),
-                    },
-                    Err(_) => continue,
+                    }
                 }
             }
             Ok(None) => break,
@@ -75,11 +70,11 @@ fn write_outbox_message<Expr: Michelson>(host: &mut impl Runtime, payload: Expr)
     host.write_output(&output).unwrap();
 }
 
-fn entry(host: &mut impl Runtime) {
+pub fn entry(host: &mut impl Runtime) {
     // Get own address using the `reveal_metadata` host function
     // in order to only handle internal messages sent to this
     // kernel.
-    let own_address = host.reveal_metadata().unwrap().address();
+    let own_address = host.reveal_metadata().address();
     read_inbox_message::<MichelsonInt>(host, &own_address);
     host.mark_for_reboot().unwrap();
 }

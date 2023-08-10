@@ -1,6 +1,24 @@
-run_everything:
-  image: nixos/nix
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+stages:
+  - test
+  - build
+
+cargo-test:
+  stage: test
+  image: rust
+  script:
+    - rustup component add clippy rustfmt
+    - cargo fmt --check
+    - cargo clippy -- -D warnings
+    - cargo test
+
+cargo-build:
+  stage: build
+  image: rust
   variables:
     TZWITTER_L1_CONTRACT: "KT1..."
   script:
-    - nix develop --experimental-features "nix-command flakes" --extra-substituters https://tezos.nix-cache.workers.dev  --extra-trusted-public-keys tezos-nix-cache.marigold.dev-1:4nS7FPPQPKJIaNQcbwzN6m7kylv16UCWWgjeZZr2wXA=  --command cargo make ci
+    - cargo build --release

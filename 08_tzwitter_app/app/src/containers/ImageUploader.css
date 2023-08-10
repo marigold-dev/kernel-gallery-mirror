@@ -1,0 +1,21 @@
+
+#button-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#button-containter button {
+  margin-right: 10px;
+}
+
+#submit {
+  border: none;
+  font-size: 16px;
+  padding: 1px 12px;
+  border-radius: 16px;
+  background-color: rgb(29, 155, 240);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}

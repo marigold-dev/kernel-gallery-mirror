@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+//
+// SPDX-License-Identifier: MIT
+
 use tezos_data_encoding::enc::BinWriter;
 
 #[derive(Debug, Default, PartialEq)]

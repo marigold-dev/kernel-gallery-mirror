@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+//
+// SPDX-License-Identifier: MIT
+
 use hex_literal::hex;
 use tezos_smart_rollup::{
     core_unsafe::PREIMAGE_HASH_SIZE, host::Runtime, kernel_entry, prelude::debug_msg,
@@ -28,9 +32,9 @@ pub mod upgrade;
 // The root hash of the Merkle tree of the debug kernel.
 // See README.md for commands to produce this hash.
 const DEBUG_KERNEL_ROOT_HASH: &[u8; PREIMAGE_HASH_SIZE] =
-    &hex!("00CBAF14DF8A6BB559040E5E7EE6853AD7B0DA69DC3C85BE22646F58D802498BDE");
+    &hex!("004B28109DF802CB1885AB29461BC1B410057A9F3A848D122AC7A742351A3A1F4E");
 
-fn entry(host: &mut impl Runtime) {
+pub fn entry(host: &mut impl Runtime) {
     debug_msg!(
         host,
         "Hello from the upgrade kernel! I haven't upgraded yet.\n"

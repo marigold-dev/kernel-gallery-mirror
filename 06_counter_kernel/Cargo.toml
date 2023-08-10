@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+# SPDX-FileCopyrightText: 2023 Nomadic Labs <contact@nomadic-labs.com>
+#
+# SPDX-License-Identifier: MIT
+
 [package]
 name = "counter-kernel"
 version = "0.1.0"
@@ -8,5 +13,5 @@ crate-type = ["cdylib", "lib"]
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-tezos_data_encoding = {version = "0.4"}
-tezos-smart-rollup = "0.1.0"
+tezos_data_encoding = {version = "0.5.0"}
+tezos-smart-rollup = "0.2.1"

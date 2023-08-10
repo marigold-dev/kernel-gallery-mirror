@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2023 Marigold <contact@marigold.dev>
+// SPDX-FileCopyrightText: 2023 Nomadic Labs <contact@nomadic-labs.com>
+//
+// SPDX-License-Identifier: MIT
+
 extern crate alloc;
 
 use tezos_smart_rollup::{kernel_entry, prelude::*, storage::path::OwnedPath};
