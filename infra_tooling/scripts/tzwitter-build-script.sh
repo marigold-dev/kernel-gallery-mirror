@@ -5,7 +5,7 @@ RPC_ENDPOINT="https://ghostnet.tezos.marigold.dev/"
 
 # import account
 account_alias=deployer
-PUBLIC_KEY=$(octez-client --endpoint "$RPC_ENDPOINT" import secret key $account_alias unencrypted:${EDSK_KEY} | grep "address added" | awk '{ print $3}')) ; echo $PUBLIC_KEY
+PUBLIC_KEY=$(octez-client --endpoint "$RPC_ENDPOINT" import secret key $account_alias unencrypted:${EDSK_KEY} | grep "address added" | awk '{ print $4}') ; echo $PUBLIC_KEY
 
 # check dependencies
 which smart-rollup-installer > /dev/null || (echo "smart-rollup-installer should be installed" && echo "cargo install tezos-smart-rollup-installer --git https://gitlab.com/tezos/tezos" && exit 1)
