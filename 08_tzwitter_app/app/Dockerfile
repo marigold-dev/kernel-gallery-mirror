@@ -1,19 +1,30 @@
-FROM node:18-alpine
+# Stage 1: Build the Vite app
+FROM node:16-alpine AS build
 
 WORKDIR /app
 
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-COPY . .
-
-RUN sed -i 's|prettier -c . \&\& ||g' package.json
-
-RUN rm -rf node_modules build
-RUN npm install -g npm@9.6.7
+# Install dependencies
 RUN npm install
 
+# Copy local code to the container
+COPY . .
+
+# Build the app
 RUN npm run build
 
+# Stage 2: Serve the Vite app
+FROM node:16-alpine
+
+WORKDIR /app
+
+# Install the 'serve' package for serving our static files
 RUN npm install -g serve
 
-CMD ["serve", "-l", "3001", "-n", "-s", "build"]
+# Copy the build output from the first stage
+COPY --from=build /app/dist /app/dist
+
+# Specify the command to run on container start
+CMD ["serve", "-s", "dist", "-l", "3001"]
