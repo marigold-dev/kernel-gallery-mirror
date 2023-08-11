@@ -22,6 +22,7 @@ class Tzwitter {
     magicByte?: string;
   }) {
     this.signer = signer;
+    console.log("rollupUrl inside Tzwitter constructor:", rollupUrl);
     this.rollupClient = new RollupClient({ tezos, rollupUrl });
     this.magicByte = '74' || magicByte;
   }
