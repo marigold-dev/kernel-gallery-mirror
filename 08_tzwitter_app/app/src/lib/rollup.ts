@@ -44,7 +44,7 @@ class RollupClient {
   async getState(path: string) {
     console.log('getState called with path:', path);
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/value?key=${path}`;
+    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/value?key=${path}`.replace("{}/", "");
     console.log('Constructed URL for getState:', url);
     const res = await fetch(url);
     if (!res.ok) {
@@ -60,7 +60,7 @@ class RollupClient {
   async getSubkeys(path: string) {
     console.log('getSubkeys called with path:', path);
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/subkeys?key=${path}`;
+    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/subkeys?key=${path}`.replace("{}/", "");
     console.log('Constructed URL for getSubkeys:', url);
     const res = await fetch(url);
     if (!res.ok) {
