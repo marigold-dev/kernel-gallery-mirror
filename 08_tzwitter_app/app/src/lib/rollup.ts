@@ -44,7 +44,7 @@ class RollupClient {
   async getState(path: string) {
     console.log('getState called with path:', path);
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/value?key=${path}`.replace("{}/", "global/");
+    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/value?key=${path}`;
     console.log('Constructed URL for getState:', url);
     const res = await fetch(url);
     if (!res.ok) {
@@ -60,7 +60,7 @@ class RollupClient {
   async getSubkeys(path: string) {
     console.log('getSubkeys called with path:', path);
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/subkeys?key=${path}`.replace("{}/", "global/");
+    const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/subkeys?key=${path}`;
     console.log('Constructed URL for getSubkeys:', url);
     const res = await fetch(url);
     if (!res.ok) {
@@ -76,7 +76,7 @@ class RollupClient {
   async tezosLevel(): Promise<number> {
     console.log('tezosLevel called');
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/tezos_level`.replace("{}/", "global/");
+    const url = `${rollupUrl}/global/tezos_level`;
     console.log('Constructed URL for tezosLevel:', url);
     const res = await fetch(url);
     if (!res.ok) {
@@ -92,7 +92,7 @@ class RollupClient {
   async getBlock(blockHash: string): Promise<RollupBlock> {
     console.log('getBlock called with blockHash:', blockHash);
     const rollupUrl = this.rollupUrl;
-    const url = `${rollupUrl}/global/block/${blockHash}`.replace("{}/", "global/");
+    const url = `${rollupUrl}/global/block/${blockHash}`;
     console.log('Constructed URL for getBlock:', url);
     const res = await fetch(url);
     if (!res.ok) {
