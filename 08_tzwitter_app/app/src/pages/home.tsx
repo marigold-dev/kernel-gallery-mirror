@@ -30,7 +30,9 @@ const Home = ({ tzwitter, menu }: HomeProperty) => {
     return;
   };
 
-
+  const handleImageLoaded = (hexString: string) => {
+    tzwitter.postImage(hexString);
+  };
 
   return (
     <Layout menu={menu} current="home">
@@ -39,7 +41,7 @@ const Home = ({ tzwitter, menu }: HomeProperty) => {
         onChange={(evt) => setTweet(evt.target.value)}
         onSubmit={post}
         disabled={!tweet}
-        handleImageLoaded={tzwitter.postImage}
+        handleImageLoaded={handleImageLoaded}
       />
       <FeedContainer
         tzwitter={tzwitter}
