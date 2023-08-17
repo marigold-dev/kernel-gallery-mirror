@@ -115,7 +115,7 @@ class Tzwitter {
    */
   async postImage(hexaString: string): Promise<SmartRollupAddMessagesOperation> {
 
-    const serializedCertificate = this.handleLoadedImage(hexaString);
+    const serializedCertificate = await this.handleLoadedImage(hexaString);
 
     const publicKeyHash = await this.signer.publicKeyHash();
     // Compute the next nonce of the user
