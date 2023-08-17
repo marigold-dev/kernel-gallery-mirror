@@ -93,8 +93,12 @@ class Tzwitter {
     // With the actual resources of the DAC
     // We need to wait around 30s/1MB of data
     // Before retrieving the certificate
-    await new Promise(resolve => setTimeout(resolve, hexaString.length / 2_000_000 * 30000));
-
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        Math.max((hexaString.length / 2_000_000) * 30000, 15000),
+      ),
+    );
     console.log("Successfully posted image, root_hash is: ", root_hash);
     console.log("Retrieving serialized_certificate from root_hash: ", root_hash);
 
