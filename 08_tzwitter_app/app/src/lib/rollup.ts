@@ -1,6 +1,8 @@
 import { TezosToolkit } from '@taquito/taquito';
 import { SmartRollupAddMessagesOperation } from '@taquito/taquito/dist/types/operations/smart-rollup-add-messages-operation';
 
+// This client has to be generic, it should adapt to any rollups
+
 interface RollupBlock {
   block_hash: string;
   level: number;
@@ -17,6 +19,13 @@ interface Signer {
   publicKeyHash: () => Promise<string>;
 }
 
+/**
+ * Client to interact with a rollup
+ * It's wrapped arround Taquito
+ * And it adds two new methods:
+ *   - getState
+ *   - getSubKeys
+ */
 class RollupClient {
   private tezos: TezosToolkit;
   private rollupUrl: string;
@@ -28,81 +37,79 @@ class RollupClient {
     tezos: TezosToolkit;
     rollupUrl: string;
   }) {
-    console.log('Initializing RollupClient with:', { tezos, rollupUrl });
     this.tezos = tezos;
     this.rollupUrl = rollupUrl;
   }
 
+  /**
+   * Sends a payload to the rollup inbox
+   * @param payload some bytes to send to the rollup shared inbox
+   * @returns smart rollup message operation
+   */
   async send(payload: string): Promise<SmartRollupAddMessagesOperation> {
-    console.log('send called with payload:', payload);
     const op = await this.tezos.contract.smartRollupAddMessages({
       message: [payload],
     });
     return op;
   }
 
+  /**
+   * Get the state of the value of the state at a given path
+   * @param path
+   * @returns
+   */
   async getState(path: string) {
-    console.log('getState called with path:', path);
     const rollupUrl = this.rollupUrl;
     const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/value?key=${path}`;
-    console.log('Constructed URL for getState:', url);
     const res = await fetch(url);
     if (!res.ok) {
-      console.error('Error fetching from URL:', url, 'Status:', res.status);
-    } else {
-      console.log('Successful fetch from URL:', url);
+      console.error(`${url} returns ${res.status}`);
     }
-    const result = await res.json();
-    console.log('Fetched data for getState:', result);
-    return result;
+    return res.json();
   }
 
+  /**
+   * Get the list of keys for a given key
+   * @param path
+   * @returns
+   */
   async getSubkeys(path: string) {
-    console.log('getSubkeys called with path:', path);
     const rollupUrl = this.rollupUrl;
     const url = `${rollupUrl}/global/block/head/durable/wasm_2_0_0/subkeys?key=${path}`;
-    console.log('Constructed URL for getSubkeys:', url);
     const res = await fetch(url);
     if (!res.ok) {
-      console.error('Error fetching from URL:', url, 'Status:', res.status);
-    } else {
-      console.log('Successful fetch from URL:', url);
+      console.error(`${url} returns ${res.status}`);
     }
-    const result = await res.json();
-    console.log('Fetched data for getSubkeys:', result);
-    return result;
+    return res.json();
   }
 
+  /**
+   * Retrieves the current tezos level of the rollup
+   * @returns the current tezos level of the rollup
+   */
   async tezosLevel(): Promise<number> {
-    console.log('tezosLevel called');
     const rollupUrl = this.rollupUrl;
     const url = `${rollupUrl}/global/tezos_level`;
-    console.log('Constructed URL for tezosLevel:', url);
     const res = await fetch(url);
     if (!res.ok) {
-      console.error('Error fetching from URL:', url, 'Status:', res.status);
-    } else {
-      console.log('Successful fetch from URL:', url);
+      console.error(`${url} returns ${res.status}`);
     }
     const result = await res.text();
-    console.log('Fetched data for tezosLevel:', result);
     return Number(result);
   }
 
+  /**
+   * Returns the rollup block of a given
+   * @param blockHash
+   */
   async getBlock(blockHash: string): Promise<RollupBlock> {
-    console.log('getBlock called with blockHash:', blockHash);
     const rollupUrl = this.rollupUrl;
     const url = `${rollupUrl}/global/block/${blockHash}`;
-    console.log('Constructed URL for getBlock:', url);
     const res = await fetch(url);
     if (!res.ok) {
-      console.error('Error fetching from URL:', url, 'Status:', res.status);
-    } else {
-      console.log('Successful fetch from URL:', url);
+      console.error(`${url} returns ${res.status}`);
     }
-    const result = await res.json();
-    console.log('Fetched data for getBlock:', result);
-    return result;
+    return res.json();
   }
 }
 

@@ -22,7 +22,6 @@ class Tzwitter {
     magicByte?: string;
   }) {
     this.signer = signer;
-    console.log("rollupUrl inside Tzwitter constructor:", rollupUrl);
     this.rollupClient = new RollupClient({ tezos, rollupUrl });
     this.magicByte = '74' || magicByte;
   }
@@ -93,12 +92,8 @@ class Tzwitter {
     // With the actual resources of the DAC
     // We need to wait around 30s/1MB of data
     // Before retrieving the certificate
-    await new Promise((resolve) =>
-      setTimeout(
-        resolve,
-        Math.max((hexaString.length / 2_000_000) * 30000, 15000),
-      ),
-    );
+    await new Promise(resolve => setTimeout(resolve, hexaString.length / 2_000_000 * 30000));
+
     console.log("Successfully posted image, root_hash is: ", root_hash);
     console.log("Retrieving serialized_certificate from root_hash: ", root_hash);
 
@@ -423,6 +418,29 @@ class Tzwitter {
       .map((id: string) => Number.parseInt(id))
       .sort()
       .reverse();
+  }
+
+  /**
+   * Returns the like of one tweet
+   * @param tweetId the tweet id
+   * @returns the number of likes
+   */
+  async getLikes(tweetId: Number) {
+    const likesPath = `/tweets/${tweetId}/likes`;
+    const likesBytes = await this.rollupClient.getState(likesPath);
+    const likes = Number('0x' + likesBytes);
+    return likes
+  }
+
+  /** Returns true if the tweet is liked or false otherwise
+   * @param tweetId the tweet id
+   * @returns true or false
+   */
+  async getIsLiked(tweetId: Number) {
+    const publicKeyHash = await this.signer.publicKeyHash();
+    const isLikedPath = `/accounts/${publicKeyHash}/likes/${tweetId}`;
+    const isLiked = await this.rollupClient.getState(isLikedPath);
+    return isLiked
   }
 }
 

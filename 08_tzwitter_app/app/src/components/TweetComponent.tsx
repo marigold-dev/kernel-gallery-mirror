@@ -3,6 +3,8 @@ import './TweetComponent.css';
 
 interface TweetProperty {
   tweet: Tweet;
+  likes: number,
+  isLiked: boolean,
   onLike?: () => void;
   onTransfer?: () => void;
   onAuthorClick?: () => void;
@@ -11,12 +13,14 @@ interface TweetProperty {
 
 const TweetComponent = ({
   tweet,
+  likes,
+  isLiked,
   onLike,
   onAuthorClick,
   onTransfer,
   onCollect,
 }: TweetProperty) => {
-  const { id, author, content, likes } = tweet;
+  const { id, author, content } = tweet;
   const authorClassNames: string = [
     'tweet-author',
     ...(onAuthorClick ? ['clickable-tweet-author'] : []),
@@ -46,11 +50,11 @@ const TweetComponent = ({
           <button
             className={'tweet-footer-buttom tweet-likes'}
             onClick={onLike}
-            disabled={isCollected || tweet.isLiked}
+            disabled={isCollected || isLiked}
           >
             <img
               className="tweet-footer-icon tweet-footer-button-with-text"
-              src={tweet.isLiked ? '/heart-fill.svg' : '/heart.svg'}
+              src={isLiked ? '/heart-fill.svg' : '/heart.svg'}
               alt="heart"
             />
             <span>{likes}</span>

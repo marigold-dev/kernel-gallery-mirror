@@ -3,6 +3,7 @@ import { Tweet } from '../lib/tweet';
 import { Tzwitter } from '../lib/tzwitter';
 import NumberOfTweets from '../components/NumberOfTweets';
 import Feed from '../components/Feed';
+import { useBlock } from '../lib/hooks';
 
 type FeedKind = 'owned' | 'written' | 'collecting' | 'all';
 
@@ -26,8 +27,51 @@ const FeedContainer = ({
   onCollect,
 }: FeedProperty) => {
   const [tweets, setTweets] = useState<Array<Tweet>>([]);
+  const [tweetLikes, setTweetLikes] = useState<Record<string, number>>({});
+  const [tweetIsLiked, setTweetIsLiked] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
+  useBlock(async () => {
+    const getTweets = async (): Promise<Array<number>> => {
+      switch (feedKind) {
+        case 'owned':
+          return publicKeyHash ? tzwitter.getOwnedTweets(publicKeyHash) : [];
+        case 'written':
+          return publicKeyHash ? tzwitter.getWrittenTweets(publicKeyHash) : [];
+        case 'collecting': {
+          return publicKeyHash
+            ? tzwitter.getCollectedTweets(publicKeyHash)
+            : [];
+        }
+        case 'all':
+        default:
+          return tzwitter.getTweets();
+      }
+    };
+
+    const ids = await getTweets();
+    const likes = await Promise.all(ids.map((id) => {
+      return new Promise(async resolve => {
+        const likes = await tzwitter.getLikes(id);
+        const isLiked = await tzwitter.getIsLiked(id);
+        resolve({ id, likes, isLiked })
+      })
+    }));
+
+    const likesMap = likes.reduce((acc: Record<string, number>, elt: any) => {
+      return { ...acc, [elt.id]: elt.likes }
+    }, {})
+
+    const isLikedMap = likes.reduce((acc: Record<string, boolean>, elt: any) => {
+      return { ...acc, [elt.id]: elt.isLiked }
+    }, {})
+
+    setTweetLikes(likesMap);
+    setTweetIsLiked(isLikedMap);
+  }, []);
+
+
+  // Fetch all the tweets
+  useBlock(() => {
     const getTweets = async (): Promise<Array<number>> => {
       switch (feedKind) {
         case 'owned':
@@ -47,26 +91,38 @@ const FeedContainer = ({
 
     const retrieveTweets = async () => {
       const tzwIds = await getTweets();
-      const tweets = await Promise.all(
-        tzwIds.map((id) => {
+      const knownTweetIds = tweets.map(tweet => tweet.id);
+      const newTweetIds = tzwIds.filter((tzwIds) => {
+        return !knownTweetIds.includes(tzwIds)
+      });
+      const newTweets = await Promise.all(
+        newTweetIds.map((id) => {
           return tzwitter.getTweet(id);
         }),
       );
-      tweets.sort((tweetA, tweetB) => tweetB.id - tweetA.id);
-      setTweets(tweets);
+
+      newTweets.sort((tweetA, tweetB) => tweetB.id - tweetA.id);
+
+      setTweets(oldTweets => {
+        if (newTweets.length > 0) {
+          const nextTweets = [...oldTweets, ...newTweets];
+          nextTweets.sort((tweetA, tweetB) => tweetB.id - tweetA.id);
+          return nextTweets;
+        } else {
+          return oldTweets
+        }
+      });
     };
     retrieveTweets();
-    const id = setInterval(retrieveTweets, 5000);
-    return () => {
-      clearInterval(id);
-    };
-  }, [feedKind, publicKeyHash, tzwitter]);
+  }, [feedKind, publicKeyHash, tzwitter, tweets]);
 
   return (
     <>
       <NumberOfTweets number={tweets.length} />
       <Feed
         tweets={tweets}
+        tweetLikes={tweetLikes}
+        tweetIsLiked={tweetIsLiked}
         onLike={onLike}
         onAuthorClick={onAuthorClick}
         onTransfer={onTransfer}

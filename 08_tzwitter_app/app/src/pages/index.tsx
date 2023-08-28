@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import AccountType from '../lib/account';
 import { TezosToolkit } from '@taquito/taquito';
 import { ROLLUP_RPC, TEZOS_RPC } from '../config';
+import { useBlock } from '../lib/hooks';
 
 const Error = () => {
   return <Navigate to="/" replace={true} />;
@@ -41,17 +42,13 @@ const Index = () => {
     });
   }, [tzwitter]);
 
-  useEffect(() => {
+  useBlock(() => {
     const checkCollecting = () => {
       if (account) {
         tzwitter.getCollectedTweets(account.publicKeyHash).then(setCollecting);
       }
     };
     checkCollecting();
-    const i = setInterval(checkCollecting, 2000);
-    return () => {
-      clearInterval(i);
-    };
   }, [account, tzwitter]);
 
   // Menu entries
@@ -86,14 +83,14 @@ const Index = () => {
     },
     ...(account
       ? [
-          {
-            path: '/profile',
-            element: (
-              <Profile menu={menu} tzwitter={tzwitter} account={account} />
-            ),
-            errorElement: <Error />,
-          },
-        ]
+        {
+          path: '/profile',
+          element: (
+            <Profile menu={menu} tzwitter={tzwitter} account={account} />
+          ),
+          errorElement: <Error />,
+        },
+      ]
       : []),
   ]);
 

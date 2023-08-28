@@ -4,6 +4,8 @@ import './Feed.css';
 
 interface FeedProperty {
   tweets: Array<Tweet>;
+  tweetLikes: Record<string, number>;
+  tweetIsLiked: Record<string, boolean>;
   onLike?: (tweetId: number) => () => void;
   onAuthorClick?: (author: string) => () => void;
   onTransfer?: (tweetId: number) => () => void;
@@ -12,6 +14,8 @@ interface FeedProperty {
 
 const Feed = ({
   tweets,
+  tweetLikes,
+  tweetIsLiked,
   onLike,
   onAuthorClick,
   onTransfer,
@@ -24,6 +28,8 @@ const Feed = ({
           <TweetComponent
             key={tweet.id}
             tweet={tweet}
+            likes={tweetLikes[tweet.id]}
+            isLiked={tweetIsLiked[tweet.id]}
             onLike={onLike && onLike(tweet.id)}
             onAuthorClick={onAuthorClick && onAuthorClick(tweet.author)}
             onTransfer={onTransfer && onTransfer(tweet.id)}
